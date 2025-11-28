@@ -1,21 +1,32 @@
 const BACKEND = process.env.BACKEND_BASE_URL || "http://47.109.142.124:8080";
 
-module.exports = async function (req, res) {
+export default async function handler(req, res) {
   try {
+    // Determine backend path and preserve query string.
+    // req.url includes the path + query after the function mount point, e.g.
+    // when calling /api/proxy/user/sendSms?x=1, req.url === '/api/proxy/user/sendSms?x=1'
     const mountPoint = "/api/proxy";
     let reqUrl = req.url || "";
 
-    if (reqUrl.startsWith(mountPoint)) reqUrl = reqUrl.slice(mountPoint.length);
+    // Remove mountPoint prefix if present
+    if (reqUrl.startsWith(mountPoint)) {
+      reqUrl = reqUrl.slice(mountPoint.length);
+    }
+
+    // Strip leading slash
     if (reqUrl.startsWith("/")) reqUrl = reqUrl.slice(1);
 
+    // Split path and query
     const qIdx = reqUrl.indexOf("?");
     const backendPath = qIdx === -1 ? reqUrl : reqUrl.slice(0, qIdx);
     const queryString = qIdx === -1 ? "" : reqUrl.slice(qIdx);
 
+    // Build backend URL
     let url = BACKEND.replace(/\/$/, "");
     if (backendPath) url += "/" + backendPath;
     url += queryString;
 
+    // Handle preflight
     if (req.method === "OPTIONS") {
       res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader(
@@ -26,11 +37,11 @@ module.exports = async function (req, res) {
         "Access-Control-Allow-Headers",
         "Content-Type, Authorization"
       );
-      res.statusCode = 204;
-      res.end();
+      res.status(204).end();
       return;
     }
 
+    // Prepare headers: copy from original request but remove host
     const headers = { ...req.headers };
     delete headers.host;
 
@@ -54,8 +65,10 @@ module.exports = async function (req, res) {
 
     const backendRes = await fetch(url, fetchOptions);
 
-    res.statusCode = backendRes.status;
+    // Copy status
+    res.status(backendRes.status);
 
+    // Copy response headers (except hop-by-hop)
     backendRes.headers.forEach((value, key) => {
       if (
         ["connection", "keep-alive", "transfer-encoding", "upgrade"].includes(
@@ -73,18 +86,16 @@ module.exports = async function (req, res) {
       try {
         const text = buffer.toString("utf8");
         console.error("[proxy] backend error", backendRes.status, text);
-        res.end(buffer);
+        res.send(buffer);
         return;
       } catch (e) {
         console.error("[proxy] error reading backend body", e);
       }
     }
 
-    res.end(buffer);
+    res.send(buffer);
   } catch (err) {
     console.error("Proxy error:", err);
-    res.statusCode = 502;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ error: "proxy_error", message: String(err) }));
+    res.status(502).json({ error: "proxy_error", message: String(err) });
   }
-};
+}
