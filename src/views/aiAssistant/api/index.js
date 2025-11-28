@@ -1,3 +1,5 @@
+import aiAvatar from "@/assets/aiAssistant/head.png";
+import userAvatar from "@/assets/rank/picture8.png";
 import request from "@/utils/request";
 import axios from "axios";
 
@@ -124,7 +126,7 @@ export const getUserInfo = async () => {
     return {
       id: "user_001",
       name: "学习者",
-      avatar: "src/assets/rank/picture8.png",
+      avatar: userAvatar,
     };
   }
 };
@@ -134,6 +136,6 @@ export const getAIInfo = () => {
   return {
     id: "ai_assistant",
     name: "AI学习助手",
-    avatar: "src/assets/aiAssistant/head.png",
+    avatar: aiAvatar,
   };
 };

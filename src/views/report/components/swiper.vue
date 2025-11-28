@@ -21,6 +21,11 @@
 </template>
 
 <script setup>
+import erxiangshiImg from "@/assets/report/erxiangshi.png";
+import gailvImg from "@/assets/report/gailv.png";
+import hanshuImg from "@/assets/report/hanshu.png";
+import jiheImg from "@/assets/report/jihe.png";
+import shulieImg from "@/assets/report/shulie.png";
 import { computed, defineProps, nextTick, onMounted, ref, watch } from "vue";
 
 // 定义props
@@ -50,14 +55,18 @@ let swiperInstance = null;
 
 // 根据图片的数据进行mock
 const defaultData = [
-  { title: "数列数数列数数列数数列数", percentage: 28, img: "../src/assets/report/shulie.png" },
-  { title: "函数", percentage: 35, img: "../src/assets/report/hanshu.png" },
-  { title: "概率", percentage: 42, img: "../src/assets/report/gailv.png" },
-  { title: "立体几何", percentage: 35, img: "../src/assets/report/jihe.png" },
+  {
+    title: "数列数数列数数列数数列数",
+    percentage: 28,
+    img: shulieImg,
+  },
+  { title: "函数", percentage: 35, img: hanshuImg },
+  { title: "概率", percentage: 42, img: gailvImg },
+  { title: "立体几何", percentage: 35, img: jiheImg },
   {
     title: "二项式",
     percentage: 28,
-    img: "../src/assets/report/erxiangshi.png",
+    img: erxiangshiImg,
   },
 ];
 

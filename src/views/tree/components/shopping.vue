@@ -2,7 +2,12 @@
   <div class="shopping">
     <topNav title="积分商城">
       <template #right>
-        <img src="@/assets/tree/icon2.png" alt="" class="location" @click="showAddLocationModal" />
+        <img
+          src="@/assets/tree/icon2.png"
+          alt=""
+          class="location"
+          @click="showAddLocationModal"
+        />
       </template>
     </topNav>
     <div class="title">
@@ -47,22 +52,26 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 添加地址弹窗 -->
-    <addLocation 
-      v-model:visible="showAddLocation" 
-      @confirm="handleAddressConfirm" 
+    <addLocation
+      v-model:visible="showAddLocation"
+      @confirm="handleAddressConfirm"
       @cancel="handleAddressCancel"
     />
   </div>
 </template>
 
 <script setup>
+import pic1 from "@/assets/tree/shopping/picture1.png";
+import pic2 from "@/assets/tree/shopping/picture2.png";
+import pic3 from "@/assets/tree/shopping/picture3.png";
+import pic4 from "@/assets/tree/shopping/picture4.png";
 import topNav from "@/components/top/nomal.vue";
-import addLocation from "./addLocation.vue";
-import { useRoute, useRouter } from "vue-router";
-import { ref, onMounted } from "vue";
 import { showToast } from "vant";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import addLocation from "./addLocation.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -85,18 +94,18 @@ const showAddLocationModal = () => {
 
 // 处理地址确认
 const handleAddressConfirm = (addressData) => {
-  console.log('收到地址信息:', addressData);
+  console.log("收到地址信息:", addressData);
   // 这里可以处理地址数据，比如保存到本地存储或发送到服务器
   showToast({
-    message: '地址添加成功！',
-    type: 'success',
-    duration: 2000
+    message: "地址添加成功！",
+    type: "success",
+    duration: 2000,
   });
 };
 
 // 处理地址取消
 const handleAddressCancel = () => {
-  console.log('取消添加地址');
+  console.log("取消添加地址");
 };
 
 // 从路由参数中获取用户信息
@@ -120,25 +129,25 @@ const goToTarget = () => {
 // 商品列表
 const shopList = [
   {
-    src: "src/assets/tree/shopping/picture1.png",
+    src: pic1,
     discribe: "手绘可爱随身记事本",
     price: 1000,
     already: 30,
   },
   {
-    src: "src/assets/tree/shopping/picture2.png",
+    src: pic2,
     discribe: "人生是旷野而不是轨道-手账本",
     price: 5000,
     already: 10,
   },
   {
-    src: "src/assets/tree/shopping/picture3.png",
+    src: pic3,
     discribe: "简约风b5高颜值耐用-笔记本",
     price: 5500,
     already: 30,
   },
   {
-    src: "src/assets/tree/shopping/picture4.png",
+    src: pic4,
     discribe: "按动式高颜值耐用速干-中性笔",
     price: 1000,
     already: 10,
@@ -322,21 +331,21 @@ const shopList = [
         img {
           position: absolute;
           top: -17px;
-          right:0px;
+          right: 0px;
         }
         .discribe {
-            margin-left:7px;
-            margin-top:5px;
+          margin-left: 7px;
+          margin-top: 5px;
           color: #3d3d3d;
         }
         .price {
-            margin-top:5px;
-            margin-left:7px;
+          margin-top: 5px;
+          margin-left: 7px;
           font-size: 16px;
           color: #dcb038;
         }
         .already {
-            margin-left:11px;
+          margin-left: 11px;
           font-size: 9px;
           font-weight: 300;
           color: #3d3d3d;

@@ -51,12 +51,12 @@
           @click="goToUserInfo(item)"
         >
           <img
-            :src="item.picture || 'src/assets/rank/picture1.png'"
+            :src="item.picture || pic1"
             :alt="item.name || item.username || '用户'"
             class="user-avatar"
             :class="`picture-${item.rank}`"
           />
-          <p class="user-name">{{ item.name || item.username || '用户' }}</p>
+          <p class="user-name">{{ item.name || item.username || "用户" }}</p>
         </div>
       </div>
     </div>
@@ -64,15 +64,27 @@
     <div class="remainRank">
       <div class="liuhai"></div>
       <div class="remainBox">
-        <div v-for="item in rankListReal.slice(3)" :key="item.id" class="rank-item">
+        <div
+          v-for="item in rankListReal.slice(3)"
+          :key="item.id"
+          class="rank-item"
+        >
           <div class="rank-number">{{ item.rank }}</div>
-          <img :src="item.picture || 'src/assets/rank/picture1.png'" :alt="item.name || item.username || '用户'" class="user-avatar" />
+          <img
+            :src="item.picture || pic1"
+            :alt="item.name || item.username || '用户'"
+            class="user-avatar"
+          />
           <div class="user-info">
-            <p class="user-name">{{ item.name || item.username || '用户' }}</p>
+            <p class="user-name">{{ item.name || item.username || "用户" }}</p>
           </div>
           <div class="user-time">
-            <span v-if="chose && choseDay">{{ formatTimeDisplay(item.dailyHours) || item.todaytime || '0h0min' }}</span>
-            <span v-else-if="chose && !choseDay">{{ formatTimeDisplay(item.totalHours) || item.alltime || '0h' }}</span>
+            <span v-if="chose && choseDay">{{
+              formatTimeDisplay(item.dailyHours) || item.todaytime || "0h0min"
+            }}</span>
+            <span v-else-if="chose && !choseDay">{{
+              formatTimeDisplay(item.totalHours) || item.alltime || "0h"
+            }}</span>
             <span v-else>{{ item.points || 0 }}分</span>
           </div>
         </div>
@@ -105,11 +117,27 @@
 </template>
 
 <script setup>
+import pic1 from "@/assets/rank/picture1.png";
+import pic2 from "@/assets/rank/picture2.png";
+import pic3 from "@/assets/rank/picture3.png";
+import pic4 from "@/assets/rank/picture4.png";
+import pic5 from "@/assets/rank/picture5.png";
+import pic6 from "@/assets/rank/picture6.png";
+import pic7 from "@/assets/rank/picture7.png";
+import pic8 from "@/assets/rank/picture8.png";
 import topNav from "@/components/top/nomal.vue";
-import { ref, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
 import { getUserInfo } from "@/views/personalCenter/api/index.js";
-import { getStudyStats, getDailyStudyTimeRank, getTotalStudyTimeRank, getPointsRank, getUserInfoById } from "@/views/rank/api/index.js";
+import {
+  getDailyStudyTimeRank,
+  getPointsRank,
+  getStudyStats,
+  getTotalStudyTimeRank,
+  getUserInfoById,
+} from "@/views/rank/api/index.js";
+import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+
+const picturesArr = [pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8];
 
 const router = useRouter();
 const starNumber = 6;
@@ -123,7 +151,7 @@ const rankListReal = ref([]);
 const myInfo = ref({
   id: null,
   name: "加载中...",
-  picture: "src/assets/rank/picture8.png", // 默认头像
+  picture: pic8, // 默认头像
   todaytime: "0h0min",
   alltime: "0h",
   points: 0,
@@ -144,15 +172,15 @@ const fetchStudyStats = async () => {
     const response = await getStudyStats();
     if (response.data) {
       const data = response.data;
-      
+
       // 更新个人信息中的学习数据
-      myInfo.value.todaytime = formatTimeDisplay(data.dailyHours) || '0h0min';
-      myInfo.value.alltime = formatTimeDisplay(data.totalHours) || '0h';
+      myInfo.value.todaytime = formatTimeDisplay(data.dailyHours) || "0h0min";
+      myInfo.value.alltime = formatTimeDisplay(data.totalHours) || "0h";
       myInfo.value.points = data.points || 0;
       myInfo.value.id = data.id || data.userId;
     }
   } catch (error) {
-    console.error('获取学习统计数据失败:', error);
+    console.error("获取学习统计数据失败:", error);
   }
 };
 
@@ -162,7 +190,7 @@ const fetchUserInfo = async () => {
     const response = await getUserInfo();
     if (response.data) {
       const data = response.data;
-      myInfo.value.name = data.username || data.nickname || '未知用户';
+      myInfo.value.name = data.username || data.nickname || "未知用户";
       myInfo.value.id = data.id;
       // 如果后端返回了头像字段，使用它，否则保持默认
       if (data.avatar || data.picture) {
@@ -170,8 +198,8 @@ const fetchUserInfo = async () => {
       }
     }
   } catch (error) {
-    console.error('获取用户信息失败:', error);
-    myInfo.value.name = '获取失败';
+    console.error("获取用户信息失败:", error);
+    myInfo.value.name = "获取失败";
   }
 };
 
@@ -187,17 +215,28 @@ const mergeUserDetailsToRankData = async (rankData) => {
             const userDetail = userResponse.data;
             return {
               ...item,
-              name: userDetail.username || userDetail.nickname || item.name || `用户${item.id}`,
-              picture: userDetail.avatarUrl || item.picture || item.avatar || `src/assets/rank/picture${(item.rank % 8) + 1}.png`,
+              name:
+                userDetail.username ||
+                userDetail.nickname ||
+                item.name ||
+                `用户${item.id}`,
+              picture:
+                userDetail.avatarUrl ||
+                item.picture ||
+                item.avatar ||
+                picturesArr[((item.rank || 1) - 1) % 8],
               phone: userDetail.phone,
               email: userDetail.email,
               bio: userDetail.bio,
               gender: userDetail.gender,
-              birthday: userDetail.birthday
+              birthday: userDetail.birthday,
             };
           }
         } catch (error) {
-          console.error(`获取用户${item.userId || item.id}详细信息失败:`, error);
+          console.error(
+            `获取用户${item.userId || item.id}详细信息失败:`,
+            error
+          );
         }
       }
       return item;
@@ -206,7 +245,7 @@ const mergeUserDetailsToRankData = async (rankData) => {
     const mergedData = await Promise.all(userDetailsPromises);
     return mergedData;
   } catch (error) {
-    console.error('合并用户详细信息失败:', error);
+    console.error("合并用户详细信息失败:", error);
     return rankData;
   }
 };
@@ -215,7 +254,7 @@ const mergeUserDetailsToRankData = async (rankData) => {
 const getRankData = async () => {
   try {
     let response;
-    
+
     if (chose.value) {
       // 学习时长
       if (choseDay.value) {
@@ -227,38 +266,37 @@ const getRankData = async () => {
       // 所获积分
       response = await getPointsRank();
     }
-    
+
     // 处理接口返回的数据
     if (response && response.data) {
       let rankData = response.data.list || response.data || [];
-      
+
       // 处理数据格式，确保字段统一
       rankData = rankData.map((item, index) => ({
         ...item,
-        rank: item.rank || (index + 1),
+        rank: item.rank || index + 1,
         name: item.name || item.username || `用户${item.id || index + 1}`,
-        picture: item.picture || item.avatar || `src/assets/rank/picture${(index % 8) + 1}.png`,
+        picture: item.picture || item.avatar || picturesArr[index % 8],
         points: item.points || 0,
         // 保持原有字段以兼容不同的数据格式
-        todaytime: item.todaytime || formatTimeDisplay(item.dailyHours) || '0h0min',
-        alltime: item.alltime || formatTimeDisplay(item.totalHours) || '0h'
+        todaytime:
+          item.todaytime || formatTimeDisplay(item.dailyHours) || "0h0min",
+        alltime: item.alltime || formatTimeDisplay(item.totalHours) || "0h",
       }));
-      
+
       // 获取用户详细信息并合并到排行榜数据中
       const mergedRankData = await mergeUserDetailsToRankData(rankData);
-      
+
       rankListReal.value = mergedRankData;
-      console.log('获取排行榜数据成功:', response.data);
-      console.log('合并用户详细信息后的rankListReal:', rankListReal.value)
+      console.log("获取排行榜数据成功:", response.data);
+      console.log("合并用户详细信息后的rankListReal:", rankListReal.value);
     } else {
       // 如果接口暂未实现，使用模拟数据
-      console.log('接口暂未实现，使用模拟数据');
+      console.log("接口暂未实现，使用模拟数据");
       rankListReal.value = rankList.value;
-
     }
-    
   } catch (error) {
-    console.error('获取排行榜数据失败:', error);
+    console.error("获取排行榜数据失败:", error);
     // 出错时使用模拟数据
     rankListReal.value = rankList.value;
   }
@@ -273,10 +311,10 @@ const getMyRank = () => {
 // 跳转到用户信息页面
 const goToUserInfo = (userInfo) => {
   router.push({
-    name: 'selfInformation',
+    name: "selfInformation",
     query: {
-      userInfo: JSON.stringify(userInfo)
-    }
+      userInfo: JSON.stringify(userInfo),
+    },
   });
 };
 
@@ -288,10 +326,7 @@ watch([chose, choseDay], () => {
 // 页面加载时获取初始数据
 onMounted(async () => {
   // 并行获取用户信息和学习统计数据
-  await Promise.all([
-    fetchUserInfo(),
-    fetchStudyStats()
-  ]);
+  await Promise.all([fetchUserInfo(), fetchStudyStats()]);
   // 获取排行榜数据
   getRankData();
 });
@@ -301,7 +336,7 @@ const rankList = ref([
     id: 1,
     rank: 1,
     name: "张俊杰",
-    picture: "src/assets/rank/picture1.png",
+    picture: pic1,
     todaytime: "4h", //今日时长
     alltime: "120h", //总学习时长
     points: 2145, //积分
@@ -311,7 +346,7 @@ const rankList = ref([
     id: 2,
     rank: 2,
     name: "王明阳",
-    picture: "src/assets/rank/picture2.png",
+    picture: pic2,
     todaytime: "5h", //今日时长
     alltime: "115h", //总学习时长
     points: 2145, //积分
@@ -321,7 +356,7 @@ const rankList = ref([
     id: 3,
     rank: 3,
     name: "陈飞与",
-    picture: "src/assets/rank/picture3.png",
+    picture: pic3,
     todaytime: "5h32min", //今日时长
     alltime: "110h", //总学习时长
     points: 2145, //积分
@@ -331,7 +366,7 @@ const rankList = ref([
     id: 4,
     rank: 4,
     name: "刘一鸣",
-    picture: "src/assets/rank/picture4.png",
+    picture: pic4,
     todaytime: "72h36min", //今日时长
     alltime: "72h36min", //总学习时长
     points: 2145, //积分
@@ -341,7 +376,7 @@ const rankList = ref([
     id: 5,
     rank: 5,
     name: "李兰风",
-    picture: "src/assets/rank/picture5.png",
+    picture: pic5,
     todaytime: "68h36min", //今日时长
     alltime: "72h36min", //总学习时长
     points: 2145, //积分
@@ -351,7 +386,7 @@ const rankList = ref([
     id: 6,
     rank: 6,
     name: "马思远",
-    picture: "src/assets/rank/picture6.png",
+    picture: pic6,
     todaytime: "64h36min", //今日时长
     alltime: "72h36min", //总学习时长
     points: 2145, //积分
@@ -361,27 +396,27 @@ const rankList = ref([
     id: 7,
     rank: 7,
     name: "张小丽",
-    picture: "src/assets/rank/picture7.png",
+    picture: pic7,
     todaytime: "59h36min", //今日时长
     alltime: "72h36min", //总学习时长
     points: 2145, //积分
     badge: 9, //徽章数量
   },
-    {
+  {
     id: 7,
     rank: 8,
     name: "张小丽",
-    picture: "src/assets/rank/picture5.png",
+    picture: pic5,
     todaytime: "72h36min", //今日时长
     alltime: "72h36min", //总学习时长
     points: 2145, //积分
     badge: 9, //徽章数量
   },
-    {
+  {
     id: 7,
     rank: 9,
     name: "张小丽",
-    picture: "src/assets/rank/picture2.png",
+    picture: pic2,
     todaytime: "72h36min", //今日时长
     alltime: "72h36min", //总学习时长
     points: 2145, //积分
@@ -553,19 +588,16 @@ const rankList = ref([
         position: absolute;
         top: 65px;
         left: 175px;
-
       }
       .silver {
         position: absolute;
         top: 104px;
         left: 56px;
-
       }
       .copper {
         position: absolute;
         top: 125px;
         right: 13.55px;
-
       }
     }
 
@@ -621,12 +653,12 @@ const rankList = ref([
         .picture-1 {
           width: 64px;
           height: 64px;
-margin-bottom: 8px;
+          margin-bottom: 8px;
         }
         .picture-2 {
           width: 53px;
           height: 53px;
-               margin-bottom: 8px;     
+          margin-bottom: 8px;
         }
         .picture-3 {
           width: 49px;
@@ -674,17 +706,17 @@ margin-bottom: 8px;
       &::-webkit-scrollbar {
         width: 4px;
       }
-      
+
       &::-webkit-scrollbar-track {
         background: rgba(255, 255, 255, 0.3);
         border-radius: 2px;
       }
-      
+
       &::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.6);
         border-radius: 2px;
       }
-      
+
       &::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.8);
       }
@@ -802,7 +834,7 @@ margin-bottom: 8px;
           font-family: "Source Han Sans";
           font-size: 13px;
           font-weight: bold;
-          color: #3D3D3D;
+          color: #3d3d3d;
           margin: 0;
         }
       }
@@ -811,7 +843,7 @@ margin-bottom: 8px;
         font-family: "Source Han Sans";
         font-size: 12px;
         font-weight: 500;
-        color: #3D3D3D;
+        color: #3d3d3d;
       }
     }
   }

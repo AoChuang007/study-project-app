@@ -87,11 +87,23 @@
 </template>
 
 <script setup>
-import topNav from "@/components/top/index.vue";
 import tabber from "@/components/tabber/index.vue";
-import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
+import topNav from "@/components/top/index.vue";
 import { useUserStore } from "@/store/user";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
+
+import icon1 from "@/assets/personal/icon1.png";
+import icon2 from "@/assets/personal/icon2.png";
+import icon3 from "@/assets/personal/icon3.png";
+import icon4 from "@/assets/personal/icon4.png";
+import icon5 from "@/assets/personal/icon5.png";
+import icon6 from "@/assets/personal/icon6.png";
+import medal1 from "@/assets/personal/medal1.png";
+import medal2 from "@/assets/personal/medal2.png";
+import medal3 from "@/assets/personal/medal3.png";
+import medal4 from "@/assets/personal/medal4.png";
+import pic8 from "@/assets/rank/picture8.png";
 
 const router = useRouter();
 const checked = ref(false);
@@ -106,10 +118,7 @@ const userInfo = computed(() => {
     age: storeUserInfo.age || 18,
     points: storeUserInfo.points || 0,
     level: storeUserInfo.level || 1,
-    picture:
-      storeUserInfo.picture ||
-      storeUserInfo.avatar ||
-      "../src/assets/rank/picture8.png",
+    picture: storeUserInfo.picture || storeUserInfo.avatar || pic8,
     badge: storeUserInfo.badge || 0,
   };
 });
@@ -174,35 +183,35 @@ const goToMoreBage = () => {
 };
 
 const medalList = ref([
-  { img: "../src/assets/personal/medal1.png" },
-  { img: "../src/assets/personal/medal2.png" },
-  { img: "../src/assets/personal/medal3.png" },
-  { img: "../src/assets/personal/medal4.png" },
+  { img: medal1 },
+  { img: medal2 },
+  { img: medal3 },
+  { img: medal4 },
 ]);
 const card2List = ref([
   {
     title: "我的学习",
-    img: "../src/assets/personal/icon1.png",
+    img: icon1,
   },
   {
     title: "学习档案",
-    img: "../src/assets/personal/icon2.png",
+    img: icon2,
   },
   {
     title: "AI助手设置",
-    img: "../src/assets/personal/icon3.png",
+    img: icon3,
   },
   {
     title: "反馈频率调节",
-    img: "../src/assets/personal/icon4.png",
+    img: icon4,
   },
   {
     title: "隐藏特定时段记录",
-    img: "../src/assets/personal/icon5.png",
+    img: icon5,
   },
   {
     title: "历史数据导出",
-    img: "../src/assets/personal/icon6.png",
+    img: icon6,
   },
 ]);
 
@@ -277,18 +286,18 @@ const options = ref([
       top: 23px;
       left: 132px;
       display: flex;
-          .name {
-      font-family: Roboto;
-      font-size: 18px;
-      font-weight: 600;
-      line-height: 21px;
-      background: linear-gradient(71deg, #3b8fef 2%, #3fb3fb 98%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-fill-color: transparent;
-      margin-right: 21px;
-    }
+      .name {
+        font-family: Roboto;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 21px;
+        background: linear-gradient(71deg, #3b8fef 2%, #3fb3fb 98%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+        margin-right: 21px;
+      }
       .number {
         color: #3fb3fb;
         text-shadow: 0px 4px 10px rgba(255, 255, 255, 0.3);
@@ -306,8 +315,8 @@ const options = ref([
         letter-spacing: 0px;
         color: #000000;
       }
-      .pointsBox{
-        position:relative;
+      .pointsBox {
+        position: relative;
         top: -12px;
       }
     }

@@ -24,32 +24,47 @@
     </div>
     <div class="main">
       <img src="@/assets/tree/tree.png" alt="" class="tree" />
-      <div class="button" @click="startChallenge" :class="{ disabled: isLoading }">
+      <div
+        class="button"
+        @click="startChallenge"
+        :class="{ disabled: isLoading }"
+      >
         <img src="@/assets/tree/start.png" alt="" />
         <p v-if="!isLoading">开始闯关</p>
         <p v-else>加载中...</p>
-        <van-loading v-if="isLoading" size="16px" color="#fff" style="margin-left: 8px;" />
+        <van-loading
+          v-if="isLoading"
+          size="16px"
+          color="#fff"
+          style="margin-left: 8px"
+        />
       </div>
       <div class="treeList">
         <div class="treeItem" v-for="level in levelsList" :key="level.id">
           <div class="treeItemBox">
             <img src="@/assets/tree/item.png" alt="" v-if="!level.isActive" />
-            <img src="@/assets/tree/itemPass.png" alt="" v-if="level.isActive" />
-            <div :class="level.isActive ? 'passText' : 'text'">第{{ level.levelNumber }}关</div>
+            <img
+              src="@/assets/tree/itemPass.png"
+              alt=""
+              v-if="level.isActive"
+            />
+            <div :class="level.isActive ? 'passText' : 'text'">
+              第{{ level.levelNumber }}关
+            </div>
           </div>
           <div class="starGroup">
-            <img
-              v-for="i in 3"
-              :key="i"
-              :src="getStarImage(level, i)"
-              alt=""
-            />
+            <img v-for="i in 3" :key="i" :src="getStarImage(level, i)" alt="" />
           </div>
         </div>
       </div>
     </div>
     <div class="topRight">
-      <div class="circleBox" v-for="(item, index) in toolList" :key="index" @click="handleToolClick(item, index)">
+      <div
+        class="circleBox"
+        v-for="(item, index) in toolList"
+        :key="index"
+        @click="handleToolClick(item, index)"
+      >
         <div class="circle">
           <img :src="item.icon" alt="" />
         </div>
@@ -64,24 +79,32 @@
     magnetic="x"
     @click="goToAiAssistant"
     class="transparent-bubble"
-    style="background: transparent;gap:0px;"
+    style="background: transparent; gap: 0px"
   >
-    <img src="@/assets/tree/float-ball.png" alt="AI助手" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+    <img
+      src="@/assets/tree/float-ball.png"
+      alt="AI助手"
+      style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover"
+    />
   </van-floating-bubble>
 </template>
 
 <script setup>
+import mallIcon from "@/assets/tree/icon.png";
+import historyIcon from "@/assets/tree/icon3.png";
+import rankIcon from "@/assets/tree/rank.png";
+import shareIcon from "@/assets/tree/share.png";
 import starImg from "@/assets/tree/star.png";
 import starPassImg from "@/assets/tree/starPass.png";
 import tabber from "@/components/tabber/index.vue";
 import topNav2 from "@/components/top/moreDetail.vue";
-import { computed, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/user.js";
-import { getUserLevels } from "./api/index.js";
-import { getGoalsByUserId } from "@/views/target/api/index.js";
 import { getStudyStats } from "@/views/rank/api/index.js";
+import { getGoalsByUserId } from "@/views/target/api/index.js";
 import { showToast } from "vant";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { getUserLevels } from "./api/index.js";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -94,13 +117,13 @@ const hasFinish = ref(2);
 // 学习时长数据
 const studyTimeData = ref({
   dailyHours: 0,
-  totalHours: 0
+  totalHours: 0,
 });
 
 // 计算总星星数量
 const totalStars = computed(() => {
   return levelsList.value.reduce((total, level) => {
-    return total + (level.starsEarned  || 0);
+    return total + (level.starsEarned || 0);
   }, 0);
 });
 
@@ -108,7 +131,7 @@ const totalStars = computed(() => {
 const isLoading = ref(false);
 
 const goToAiAssistant = () => {
-  router.push('/aiAssistant');
+  router.push("/aiAssistant");
 };
 
 // 从store获取真实用户数据
@@ -128,28 +151,28 @@ const toolList = [
   {
     id: 1,
     name: "分享",
-    icon: "/src/assets/tree/share.png",
+    icon: shareIcon,
   },
   {
     id: 2,
     name: "排行榜",
-    icon: "/src/assets/tree/rank.png",
+    icon: rankIcon,
   },
   {
     id: 3,
     name: "商城",
-    icon: "/src/assets/tree/icon.png",
+    icon: mallIcon,
   },
-    {
+  {
     id: 4,
     name: "历史记录",
-    icon: "/src/assets/tree/icon3.png",
+    icon: historyIcon,
   },
 ];
 
 // 当前关卡号（待闯关的关卡）
 const pass = computed(() => {
-  const activeLevels = levelsList.value.filter(level => level.isActive === 1);
+  const activeLevels = levelsList.value.filter((level) => level.isActive === 1);
   if (activeLevels.length > 0) {
     // 如果所有关卡都完成了（8关全部isActive=1），显示最后一关
     if (activeLevels.length === allWork.value) {
@@ -162,14 +185,16 @@ const pass = computed(() => {
 });
 
 // 获取星星图片
-const  getStarImage = (level, starIndex) => {
+const getStarImage = (level, starIndex) => {
   // 检查是否是最后一个isActive=1的关卡（待闯关关卡）
-  const activeLevels = levelsList.value.filter(l => l.isActive === 1);
-  const isLastActiveLevel = activeLevels.length > 0 && level.id === activeLevels[activeLevels.length - 1].id;
-  
+  const activeLevels = levelsList.value.filter((l) => l.isActive === 1);
+  const isLastActiveLevel =
+    activeLevels.length > 0 &&
+    level.id === activeLevels[activeLevels.length - 1].id;
+
   // 如果所有关卡都完成了（8关全部isActive=1），所有关卡都显示星星
   const allCompleted = activeLevels.length === allWork.value;
-  
+
   if (level.isActive && (!isLastActiveLevel || allCompleted)) {
     // 已完成的关卡或全部完成时，根据starsEarned显示对应数量的亮星
     return starIndex <= level.starsEarned ? starPassImg : starImg;
@@ -186,25 +211,28 @@ const percentageNum = computed(() => {
 
 // 处理工具项点击事件
 const handleToolClick = (item, index) => {
-  console.log(item, index)
-  if (index === 1) { // 第二个项目（排行榜）
-    router.push('/tree/rank');
+  console.log(item, index);
+  if (index === 1) {
+    // 第二个项目（排行榜）
+    router.push("/tree/rank");
   }
-  if (index === 2) { // 第三个项目（商城）
+  if (index === 2) {
+    // 第三个项目（商城）
     router.push({
-      path: '/tree/shopping',
+      path: "/tree/shopping",
       query: {
         username: userInfo.value.name,
         level: userInfo.value.level,
         time: userInfo.value.time,
         starNumber: userInfo.value.starNumber,
         points: userInfo.value.points,
-        linktime: userInfo.value.linktime
-      }
+        linktime: userInfo.value.linktime,
+      },
     });
   }
-  if (index === 3) { // 第四个项目（历史记录）
-    router.push('/tree/history');
+  if (index === 3) {
+    // 第四个项目（历史记录）
+    router.push("/tree/history");
   }
   // 可以在这里添加其他工具项的处理逻辑
 };
@@ -214,45 +242,48 @@ const startChallenge = async () => {
   try {
     // 设置加载状态
     isLoading.value = true;
-    
+
     // 调用getUserLevels接口获取关卡数据
     const response = await getUserLevels();
     const levels = response.data || response;
-    
+
     // 找到最后一个isActive为1的关卡ID
-    const completedLevels = levels.filter(level => level.isActive === 1);
-    
+    const completedLevels = levels.filter((level) => level.isActive === 1);
+
     // 检查是否所有关卡都已完成
     if (completedLevels.length === levels.length) {
       // 所有关卡都已完成，显示轻提示
-      showToast('恭喜！您已经完成了所有关卡！');
+      showToast("恭喜！您已经完成了所有关卡！");
       return;
     }
-    
-    const nextLevel = completedLevels.length > 0 ? completedLevels[completedLevels.length - 1] : null;
-    
+
+    const nextLevel =
+      completedLevels.length > 0
+        ? completedLevels[completedLevels.length - 1]
+        : null;
+
     if (nextLevel) {
       // 调用getGoalsByUserId接口获取目标数据
       const goalsResponse = await getGoalsByUserId();
       const goals = goalsResponse.data || goalsResponse;
-      
+
       // 提取所有目标的id到goalIds数组中
-      const goalIds = goals.map(goal => goal.id);
-      
+      const goalIds = goals.map((goal) => goal.id);
+
       // 跳转到passLevels页面并传递关卡ID和目标IDs
       router.push({
-        path: '/tree/passLevels',
+        path: "/tree/passLevels",
         query: {
           levelId: nextLevel.id,
-          goalIds: JSON.stringify(goalIds)
-        }
+          goalIds: JSON.stringify(goalIds),
+        },
       });
     } else {
       // 如果没有找到未激活的关卡，可以提示用户已完成所有关卡
-      console.log('所有关卡已完成');
+      console.log("所有关卡已完成");
     }
   } catch (error) {
-    console.error('获取关卡数据失败:', error);
+    console.error("获取关卡数据失败:", error);
   } finally {
     // 无论成功还是失败都要关闭加载状态
     isLoading.value = false;
@@ -265,19 +296,20 @@ const fetchLevelsData = async () => {
     const response = await getUserLevels();
     const levels = response.data || response;
     levelsList.value = levels;
-    
+
     // 更新已完成关卡数
-    const completedLevels = levels.filter(level => level.isActive === 1);
+    const completedLevels = levels.filter((level) => level.isActive === 1);
     // 如果所有关卡都完成了，显示全部关卡数
     if (completedLevels.length === levels.length) {
       hasFinish.value = completedLevels.length;
     } else {
       // 否则排除待闯关的关卡
-      hasFinish.value = completedLevels.length > 0 ? completedLevels.length - 1 : 0;
+      hasFinish.value =
+        completedLevels.length > 0 ? completedLevels.length - 1 : 0;
     }
     allWork.value = levels.length;
   } catch (error) {
-    console.error('获取关卡数据失败:', error);
+    console.error("获取关卡数据失败:", error);
   }
 };
 
@@ -288,11 +320,11 @@ const fetchStudyTimeData = async () => {
     if (response.data) {
       studyTimeData.value = {
         dailyHours: response.data.dailyHours || 0,
-        totalHours: response.data.totalHours || 0
+        totalHours: response.data.totalHours || 0,
       };
     }
   } catch (error) {
-    console.error('获取学习时长数据失败:', error);
+    console.error("获取学习时长数据失败:", error);
   }
 };
 
@@ -538,7 +570,7 @@ onMounted(() => {
         }
       }
       .text {
-      width: auto;
+        width: auto;
         font-family: Alibaba PuHuiTi 2;
         font-size: 10px;
         color: #535353;

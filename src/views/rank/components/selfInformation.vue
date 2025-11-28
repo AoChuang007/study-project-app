@@ -68,37 +68,56 @@
 
 <script setup>
 import topNav from "@/components/top/nomal.vue";
-import { ref, onMounted, computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+
+import badge1 from "@/assets/rank/badge/badge1.png";
+import badge10 from "@/assets/rank/badge/badge10.png";
+import badge11 from "@/assets/rank/badge/badge11.png";
+import badge12 from "@/assets/rank/badge/badge12.png";
+import badge13 from "@/assets/rank/badge/badge13.png";
+import badge14 from "@/assets/rank/badge/badge14.png";
+import badge15 from "@/assets/rank/badge/badge15.png";
+import badge16 from "@/assets/rank/badge/badge16.png";
+import badge17 from "@/assets/rank/badge/badge17.png";
+import badge18 from "@/assets/rank/badge/badge18.png";
+import badge19 from "@/assets/rank/badge/badge19.png";
+import badge2 from "@/assets/rank/badge/badge2.png";
+import badge20 from "@/assets/rank/badge/badge20.png";
+import badge3 from "@/assets/rank/badge/badge3.png";
+import badge4 from "@/assets/rank/badge/badge4.png";
+import badge5 from "@/assets/rank/badge/badge5.png";
+import badge6 from "@/assets/rank/badge/badge6.png";
+import badge7 from "@/assets/rank/badge/badge7.png";
+import badge8 from "@/assets/rank/badge/badge8.png";
+import badge9 from "@/assets/rank/badge/badge9.png";
 
 const route = useRoute();
 const userInfo = ref(null);
 
-// 徽章图片地址配置
-const badgeImages = {
-  // 获得状态的徽章 (1-10)
-  1: "src/assets/rank/badge/badge1.png",
-  2: "src/assets/rank/badge/badge2.png",
-  3: "src/assets/rank/badge/badge3.png",
-  4: "src/assets/rank/badge/badge4.png",
-  5: "src/assets/rank/badge/badge5.png",
-  6: "src/assets/rank/badge/badge6.png",
-  7: "src/assets/rank/badge/badge7.png",
-  8: "src/assets/rank/badge/badge8.png",
-  9: "src/assets/rank/badge/badge9.png",
-  10: "src/assets/rank/badge/badge10.png",
-  // 未获得状态的徽章 (11-20)
-  11: "src/assets/rank/badge/badge11.png",
-  12: "src/assets/rank/badge/badge12.png",
-  13: "src/assets/rank/badge/badge13.png",
-  14: "src/assets/rank/badge/badge14.png",
-  15: "src/assets/rank/badge/badge15.png",
-  16: "src/assets/rank/badge/badge16.png",
-  17: "src/assets/rank/badge/badge17.png",
-  18: "src/assets/rank/badge/badge18.png",
-  19: "src/assets/rank/badge/badge19.png",
-  20: "src/assets/rank/badge/badge20.png",
-};
+const badgeImagesArr = [
+  null,
+  badge1,
+  badge2,
+  badge3,
+  badge4,
+  badge5,
+  badge6,
+  badge7,
+  badge8,
+  badge9,
+  badge10,
+  badge11,
+  badge12,
+  badge13,
+  badge14,
+  badge15,
+  badge16,
+  badge17,
+  badge18,
+  badge19,
+  badge20,
+];
 
 // 徽章名称配置
 const badgeNames = {
@@ -119,7 +138,7 @@ const getBadgeImage = (badgeIndex) => {
   // 判断徽章是否已获得，如果已获得显示1-10的图片，否则显示11-20的图片
   const isObtained = isBadgeObtained(badgeIndex);
   const imageIndex = isObtained ? badgeIndex : badgeIndex + 10;
-  return badgeImages[imageIndex] || "src/assets/rank/badge/badge1.png"; // 默认图片
+  return badgeImagesArr[imageIndex] || badge1; // 默认图片
 };
 
 // 判断徽章是否已获得
@@ -235,12 +254,12 @@ onMounted(() => {
         display: flex;
         justify-content: flex-start;
 
-                font-family:"Alibaba PuHuiTi 2.0";
-font-size: 14px;
-font-weight: normal;
-line-height: 21px;
-letter-spacing: 0px;
-color: #000000;
+        font-family: "Alibaba PuHuiTi 2.0";
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 21px;
+        letter-spacing: 0px;
+        color: #000000;
         img {
           margin-left: 30px;
           margin-right: 7px;

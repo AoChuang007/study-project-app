@@ -119,7 +119,7 @@
               <!-- 预计时间 -->
               <div class="timeBox">
                 <img src="@/assets/report/clock.png" alt="" />
-                <p class="timeText">预计用时{{ item.time}}小时</p>
+                <p class="timeText">预计用时{{ item.time }}小时</p>
               </div>
             </div>
             <div class="remainder">{{ item.remainder }}</div>
@@ -135,23 +135,40 @@
     @offset-change="onOffsetChange"
     @click="goToAiAssistant"
     class="transparent-bubble"
-    style="background: transparent;gap:0px;"
+    style="background: transparent; gap: 0px"
   >
-    <img src="@/assets/tree/float-ball.png" alt="AI助手" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+    <img
+      src="@/assets/tree/float-ball.png"
+      alt="AI助手"
+      style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover"
+    />
   </van-floating-bubble>
 </template>
 
 <script setup>
-import topNav from "@/components/top/nosearch.vue";
 import tabber from "@/components/tabber/index.vue";
-import swiper from "../report/components/swiper.vue";
-import binEchars from "../report/components/binEchars.vue";
-import targetDifficulty from "../report/components/targetDifficulty.vue";
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import topNav from "@/components/top/nosearch.vue";
 import { useUserStore } from "@/store/user";
-import { getLearningAnalysisReport, getAllGoals, getUnfinishedGoals } from "./api/index.js";
 import { getStudyStats } from "@/views/rank/api/index.js";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import binEchars from "../report/components/binEchars.vue";
+import swiper from "../report/components/swiper.vue";
+import targetDifficulty from "../report/components/targetDifficulty.vue";
+import {
+  getAllGoals,
+  getLearningAnalysisReport,
+  getUnfinishedGoals,
+} from "./api/index.js";
+
+import chengxuImg from "@/assets/report/chengxu.png";
+import daishuImg from "@/assets/report/daishu.png";
+import erxiangshiImg from "@/assets/report/erxiangshi.png";
+import gailvImg from "@/assets/report/gailv.png";
+import hanshuImg from "@/assets/report/hanshu.png";
+import jiheImg from "@/assets/report/jihe.png";
+import shulieImg from "@/assets/report/shulie.png";
+import sijiImg from "@/assets/report/siji.png";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -161,20 +178,20 @@ const onOffsetChange = (offset) => {
 };
 
 const goToAiAssistant = () => {
-  router.push('/aiAssistant');
+  router.push("/aiAssistant");
 };
 
 // 目标数据
 const targetData = ref({
   totalTargets: 0,
-  unfinishedTargets: 0
+  unfinishedTargets: 0,
 });
 
 // 学习时长数据
 const studyTimeData = ref({
   dailyHours: 0,
   totalHours: 0,
-  weeklyHours: 0
+  weeklyHours: 0,
 });
 
 // 从store获取用户信息，如果没有则使用默认值
@@ -182,7 +199,7 @@ const userInfo = computed(() => {
   const storeUserInfo = userStore.userInfo;
   const totalTargets = targetData.value.totalTargets || 0;
   const unfinishedTargets = targetData.value.unfinishedTargets || 0;
-  
+
   return {
     username: storeUserInfo.name || storeUserInfo.username || "用户",
     level: storeUserInfo.level || 1,
@@ -211,20 +228,20 @@ const knowledgeMasteryData = ref([]);
 // 难度分布数据 - 传递给targetDifficulty组件
 const difficultyData = ref([]);
 
-// 默认图片映射
+// 默认图片映射（使用 import）
 const defaultImages = {
-  '英语四级': '../src/assets/report/siji.png',
-  '线性代数': '../src/assets/report/daishu.png',
-  '程序设计': '../src/assets/report/chengxu.png',
-  '数据分析': '../src/assets/report/shulie.png',
-  '函数': '../src/assets/report/hanshu.png',
-  '概率': '../src/assets/report/gailv.png',
-  '立体几何': '../src/assets/report/jihe.png',
-  '二项式': '../src/assets/report/erxiangshi.png',
-  '数列': '../src/assets/report/shulie.png',
-  '阅读': '../src/assets/report/shulie.png',
-  '研究生入学考试': '../src/assets/report/daishu.png',
-  'React': '../src/assets/report/chengxu.png'
+  英语四级: sijiImg,
+  线性代数: daishuImg,
+  程序设计: chengxuImg,
+  数据分析: shulieImg,
+  函数: hanshuImg,
+  概率: gailvImg,
+  立体几何: jiheImg,
+  二项式: erxiangshiImg,
+  数列: shulieImg,
+  阅读: shulieImg,
+  研究生入学考试: daishuImg,
+  React: chengxuImg,
 };
 
 // 获取目标数据
@@ -232,22 +249,26 @@ const fetchTargetData = async () => {
   try {
     // 获取所有目标
     const allGoalsResponse = await getAllGoals();
-    const totalTargets = allGoalsResponse.data ? allGoalsResponse.data.length : 0;
-    
+    const totalTargets = allGoalsResponse.data
+      ? allGoalsResponse.data.length
+      : 0;
+
     // 获取未完成目标
     const unfinishedGoalsResponse = await getUnfinishedGoals();
-    const unfinishedTargets = unfinishedGoalsResponse.data ? unfinishedGoalsResponse.data.length : 0;
-    
+    const unfinishedTargets = unfinishedGoalsResponse.data
+      ? unfinishedGoalsResponse.data.length
+      : 0;
+
     targetData.value = {
       totalTargets,
-      unfinishedTargets
+      unfinishedTargets,
     };
   } catch (error) {
-    console.error('获取目标数据失败:', error);
+    console.error("获取目标数据失败:", error);
     // 设置默认值防止NaN
     targetData.value = {
       totalTargets: 0,
-      unfinishedTargets: 0
+      unfinishedTargets: 0,
     };
   }
 };
@@ -257,57 +278,61 @@ const fetchLearningAnalysis = async () => {
   try {
     const response = await getLearningAnalysisReport();
     const data = response.data || response;
-    
+
     if (data.learningAnalysis) {
       const analysis = data.learningAnalysis;
-      
+
       // 设置专注力分析数据
       if (analysis.focusAnalysis && analysis.focusAnalysis.data) {
         reportList.value = analysis.focusAnalysis.data;
       }
-      
+
       // 设置知识掌握度数据（传递给swiper组件）
       if (analysis.knowledgeMastery && analysis.knowledgeMastery.data) {
-        knowledgeMasteryData.value = analysis.knowledgeMastery.data.map(item => ({
-          title: item.title,
-          percentage: item.percentage,
-          img: defaultImages[item.title] || '../src/assets/report/shulie.png'
-        }));
+        knowledgeMasteryData.value = analysis.knowledgeMastery.data.map(
+          (item) => ({
+            title: item.title,
+            percentage: item.percentage,
+            img: defaultImages[item.title] || shulieImg,
+          })
+        );
       }
-      
+
       // 设置时间分布数据
       if (analysis.timeDistribution && analysis.timeDistribution.data) {
-        timeCostList.value = analysis.timeDistribution.data.map(item => ({
+        timeCostList.value = analysis.timeDistribution.data.map((item) => ({
           ...item,
-          value: Math.round(item.value / 5)
+          value: Math.round(item.value / 5),
         }));
       }
-      
+
       // 设置难度分布数据（转换格式给targetDifficulty组件）
-      if (analysis.difficultyDistribution && analysis.difficultyDistribution.data) {
-        difficultyData.value = analysis.difficultyDistribution.data.map(item => [
-          item.name,
-          item.level
-        ]);
+      if (
+        analysis.difficultyDistribution &&
+        analysis.difficultyDistribution.data
+      ) {
+        difficultyData.value = analysis.difficultyDistribution.data.map(
+          (item) => [item.name, item.level]
+        );
       }
-      
+
       // 设置推荐学习数据
       if (analysis.recommendedLearning && analysis.recommendedLearning.data) {
-        backlogList.value = analysis.recommendedLearning.data.map(item => ({
+        backlogList.value = analysis.recommendedLearning.data.map((item) => ({
           name: item.name,
           time: item.time,
           remainder: item.remainder,
-          img: defaultImages[item.name] || '../src/assets/report/siji.png'
+          img: defaultImages[item.name] || sijiImg,
         }));
       }
-      
+
       // 设置AI建议
       if (analysis.aiSuggestion) {
         suggestion.value = analysis.aiSuggestion;
       }
     }
   } catch (error) {
-    console.error('获取学习分析数据失败:', error);
+    console.error("获取学习分析数据失败:", error);
     // 可以设置一些默认数据或显示错误提示
   }
 };
@@ -320,11 +345,12 @@ const fetchStudyTimeData = async () => {
       studyTimeData.value = {
         dailyHours: response.data.dailyHours || 0,
         totalHours: response.data.totalHours || 0,
-        weeklyHours: response.data.weeklyHours || response.data.totalHours * 0.7 || 0 // 假设周学习时间为总时间的70%
+        weeklyHours:
+          response.data.weeklyHours || response.data.totalHours * 0.7 || 0, // 假设周学习时间为总时间的70%
       };
     }
   } catch (error) {
-    console.error('获取学习时长数据失败:', error);
+    console.error("获取学习时长数据失败:", error);
   }
 };
 
@@ -450,7 +476,7 @@ const formattedSuggestion = computed(() => {
       .item {
         width: 32px;
         // height: 50px;
-        height:auto ;
+        height: auto;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -859,7 +885,7 @@ const formattedSuggestion = computed(() => {
         .item {
           width: 310px;
           // height: 80px;
-          height:auto;
+          height: auto;
           margin-top: 16px;
           border-radius: 12px;
           /* 8888888 */
@@ -962,7 +988,7 @@ const formattedSuggestion = computed(() => {
         .item:last-child {
           margin-bottom: 13px;
         }
-                .item:first-child {
+        .item:first-child {
           margin-top: 13px;
         }
       }

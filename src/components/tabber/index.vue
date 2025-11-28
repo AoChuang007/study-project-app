@@ -16,8 +16,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+import {
+  default as homeIcon,
+  default as homeIconActive,
+} from "@/assets/icons/home.png";
+import personActiveIcon from "@/assets/icons/person_active.png";
+import personInactiveIcon from "@/assets/icons/person_inactive.png";
+import reportIcon from "@/assets/icons/report.png";
+import reportIconActive from "@/assets/icons/report_active.png";
+import targetIcon from "@/assets/icons/target.png";
+import targetIconActive from "@/assets/icons/target_active.png";
+import treeIcon from "@/assets/icons/tree.png";
+import treeIconActive from "@/assets/icons/tree_active.png";
 
 const router = useRouter();
 const route = useRoute();
@@ -25,33 +38,33 @@ const activeIndex = ref(0);
 const navItems = ref([
   {
     label: "目标管理",
-    icon: "../src/assets/icons/target.png",
+    icon: targetIcon,
     path: "/target",
-    activeIcon: "../src/assets/icons/target_active.png",
+    activeIcon: targetIconActive,
   },
   {
     label: "智能报告",
-    icon: "../src/assets/icons/report.png",
+    icon: reportIcon,
     path: "/report",
-    activeIcon: "../src/assets/icons/report_active.png",
+    activeIcon: reportIconActive,
   },
   {
     label: "学习看板",
-    icon: "../src/assets/icons/home.png",
+    icon: homeIcon,
     path: "/studyLook",
-    activeIcon: "../src/assets/icons/home.png",
+    activeIcon: homeIconActive,
   },
   {
     label: "爬树乐园",
-    icon: "../src/assets/icons/tree.png",
+    icon: treeIcon,
     path: "/tree",
-    activeIcon: "../src/assets/icons/tree_active.png",
+    activeIcon: treeIconActive,
   },
   {
     label: "个人中心",
-    icon: "../src/assets/icons/person_inactive.png",
+    icon: personInactiveIcon,
     path: "/personalCenter",
-    activeIcon: "../src/assets/icons/person_active.png",
+    activeIcon: personActiveIcon,
   },
 ]);
 
@@ -86,7 +99,7 @@ const handleNavClick = (index, path) => {
 
 <style lang="less" scoped>
 .footBox {
-  background: url("../src/assets/personal/bg2.png") no-repeat;
+  background: url("@/assets/personal/bg2.png") no-repeat;
   background-position: center center; /* 图片居中 */
   background-repeat: no-repeat; /* 不重复 */
   background-size: auto; /* 保持原始尺寸 */
@@ -124,7 +137,7 @@ const handleNavClick = (index, path) => {
 
     &.active .text {
       margin-top: 3px;
-      color: #2884ED;
+      color: #2884ed;
     }
   }
 }
@@ -158,9 +171,13 @@ const handleNavClick = (index, path) => {
   }
 }
 .nav-item:nth-child(3).active {
-   background-image: 
-    linear-gradient(180deg, #ffffff 9%, rgba(255, 255, 255, 0) 100%),
+  background-image: linear-gradient(
+      180deg,
+      #ffffff 9%,
+      rgba(255, 255, 255, 0) 100%
+    ),
     radial-gradient(50% 50% at 50% 50%, #ffffff 46%, #2ab0ff 100%);
   background-color: rgba(255, 255, 255, 0.35); /* 单独设置背景色 */
-   /* 如果需要强制覆盖 */}
+  /* 如果需要强制覆盖 */
+}
 </style>

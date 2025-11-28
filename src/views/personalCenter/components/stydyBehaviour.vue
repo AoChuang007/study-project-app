@@ -83,17 +83,21 @@
           :key="index"
           class="day-cell"
           :class="{
-            'empty': day === null,
-            'active': day !== null && isActiveDay(day),
-            'today': day !== null && isToday(day),
-            'selected': day !== null && selectedDay === day,
-            'inactive': day !== null && isPastDay(day),
+            empty: day === null,
+            active: day !== null && isActiveDay(day),
+            today: day !== null && isToday(day),
+            selected: day !== null && selectedDay === day,
+            inactive: day !== null && isPastDay(day),
           }"
           @click="day !== null && selectDay(day)"
         >
           {{ day }}
           <!-- src\assets\personal\behaviour\bingou.png -->
-          <img src="@/assets/personal/behaviour/bingou.png" alt="" v-if="isActiveDay(day)" >
+          <img
+            src="@/assets/personal/behaviour/bingou.png"
+            alt=""
+            v-if="isActiveDay(day)"
+          />
         </div>
       </div>
     </div>
@@ -101,7 +105,7 @@
     <!-- 打卡按钮 -->
     <div class="punch-button-container">
       <button class="punch-button" @click="punchIn" :disabled="loading">
-        {{ loading ? '打卡中...' : '打卡' }}
+        {{ loading ? "打卡中..." : "打卡" }}
       </button>
     </div>
   </div>
@@ -109,10 +113,15 @@
 
 <script setup>
 import topNav from "@/components/top/nomal.vue";
-import { ref, computed, onMounted } from "vue";
-import { showToast, showLoadingToast, closeToast } from "vant";
+import { closeToast, showLoadingToast, showToast } from "vant";
+import { computed, onMounted, ref } from "vue";
 // 导入API接口
-import { getOneYearCheckIn, getTodayCheckInStatus, getContinuousDays, checkIn } from "../api/studyBehavior.js";
+import {
+  checkIn,
+  getContinuousDays,
+  getOneYearCheckIn,
+  getTodayCheckInStatus,
+} from "../api/studyBehavior.js";
 
 // 学习数据
 const studyHours = ref(0);
@@ -146,17 +155,17 @@ const firstDayOfMonth = computed(() => {
 // 生成日历网格数据，包括前面的空白占位符
 const calendarDays = computed(() => {
   const days = [];
-  
+
   // 添加空白占位符
   for (let i = 0; i < firstDayOfMonth.value; i++) {
     days.push(null);
   }
-  
+
   // 添加当月的天数
   for (let i = 1; i <= daysInMonth.value; i++) {
     days.push(i);
   }
-  
+
   return days;
 });
 
@@ -194,7 +203,7 @@ const checkTodayStatus = async () => {
       const today = new Date();
       const todayMonth = today.getMonth() + 1;
       const todayDay = today.getDate();
-      
+
       if (isCheckedIn) {
         // 更新今日打卡状态到activeDays中
         let currentMonthRecord = activeDays.value.find(
@@ -210,7 +219,7 @@ const checkTodayStatus = async () => {
       }
     }
   } catch (error) {
-    console.error('检查今日打卡状态失败:', error);
+    console.error("检查今日打卡状态失败:", error);
   }
 };
 
@@ -234,7 +243,7 @@ const prevMonth = async () => {
   newDate.setMonth(newDate.getMonth() - 1);
   currentDate.value = newDate;
   selectedDay.value = 1;
-  
+
   // 获取新年份的打卡数据
   await fetchOneYearCheckIn(newDate.getFullYear());
 };
@@ -245,7 +254,7 @@ const nextMonth = async () => {
   newDate.setMonth(newDate.getMonth() + 1);
   currentDate.value = newDate;
   selectedDay.value = 1;
-  
+
   // 获取新年份的打卡数据
   await fetchOneYearCheckIn(newDate.getFullYear());
 };
@@ -257,15 +266,15 @@ const fetchContinuousDays = async (retryCount = 0) => {
     if (response && response.code === 200) {
       continuousDays.value = response.data || 0;
     } else {
-      throw new Error(response?.message || '获取连续打卡天数失败');
+      throw new Error(response?.message || "获取连续打卡天数失败");
     }
   } catch (error) {
-    console.error('获取连续打卡天数失败:', error);
+    console.error("获取连续打卡天数失败:", error);
     if (retryCount < 2) {
       // 最多重试2次
       setTimeout(() => fetchContinuousDays(retryCount + 1), 1000);
     } else {
-      showToast('获取连续打卡天数失败，请检查网络连接');
+      showToast("获取连续打卡天数失败，请检查网络连接");
     }
   }
 };
@@ -277,17 +286,17 @@ const fetchOneYearCheckIn = async (year, retryCount = 0) => {
     if (response && response.code === 200 && response.data) {
       // 更新打卡数据，数据格式：[{month: 11, days: [13]}, {month: 6, days: [11]}]
       activeDays.value = response.data;
-      console.log('更新打卡数据:', response.data);
+      console.log("更新打卡数据:", response.data);
     } else {
-      throw new Error(response?.message || '获取打卡数据失败');
+      throw new Error(response?.message || "获取打卡数据失败");
     }
   } catch (error) {
-    console.error('获取打卡数据失败:', error);
+    console.error("获取打卡数据失败:", error);
     if (retryCount < 2) {
       // 最多重试2次
       setTimeout(() => fetchOneYearCheckIn(year, retryCount + 1), 1000);
     } else {
-      showToast('获取打卡数据失败，请检查网络连接');
+      showToast("获取打卡数据失败，请检查网络连接");
     }
   }
 };
@@ -323,13 +332,13 @@ const punchIn = async () => {
   try {
     loading.value = true;
     showLoadingToast({
-      message: '打卡中...',
+      message: "打卡中...",
       forbidClick: true,
     });
 
     // 调用签到接口
     const response = await checkIn();
-    
+
     if (response && response.code === 200) {
       // 查找当前月份的打卡记录
       let currentMonthRecord = activeDays.value.find(
@@ -346,21 +355,18 @@ const punchIn = async () => {
       if (!currentMonthRecord.days.includes(selectedDay.value)) {
         currentMonthRecord.days.push(selectedDay.value);
       }
-      
+
       closeToast();
       showToast(response.data || "签到成功！");
 
       // 重新获取连续打卡天数和今日打卡状态
-      await Promise.all([
-        fetchContinuousDays(),
-        checkTodayStatus()
-      ]);
+      await Promise.all([fetchContinuousDays(), checkTodayStatus()]);
     } else {
       closeToast();
       showToast(response?.message || "签到失败，请重试");
     }
   } catch (error) {
-    console.error('签到失败:', error);
+    console.error("签到失败:", error);
     closeToast();
     showToast("签到失败，请检查网络连接");
   } finally {
@@ -372,16 +378,16 @@ const punchIn = async () => {
 const initData = async () => {
   try {
     loading.value = true;
-    
+
     // 并行获取连续打卡天数、一年的打卡数据和今日打卡状态
     await Promise.all([
       fetchContinuousDays(),
       fetchOneYearCheckIn(currentYear.value),
-      checkTodayStatus()
+      checkTodayStatus(),
     ]);
   } catch (error) {
-    console.error('初始化数据失败:', error);
-    showToast('数据加载失败，请刷新重试');
+    console.error("初始化数据失败:", error);
+    showToast("数据加载失败，请刷新重试");
   } finally {
     loading.value = false;
   }
@@ -406,7 +412,7 @@ onMounted(async () => {
     width: 343px;
     min-height: 115px;
     margin: 16px 17px 0 15px;
-    background: url("../src/assets/personal/behaviour/bg.png") no-repeat;
+    background: url("@/assets/personal/behaviour/bg.png") no-repeat;
     background-size: auto;
     width: auto;
     height: auto;
@@ -661,14 +667,14 @@ onMounted(async () => {
           border: 1px solid #000;
           color: #3fb3fb;
         }
-        
+
         &.empty {
           background: transparent;
           cursor: default;
           pointer-events: none;
         }
-        img{
-          position:absolute;
+        img {
+          position: absolute;
           bottom: 0px;
           right: 6px;
         }

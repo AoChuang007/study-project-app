@@ -47,13 +47,12 @@
 </template>
 
 <script setup>
+import topNav from "@/components/top/nomal.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import topNav from "@/components/top/nomal.vue";
 import { useLoading } from "../../hooks/useLoading.js";
+import { cleanDataByAi, createGoalsByAi } from "./api/index";
 import createOCRClient from "./api/orc-api";
-import { createGoalsByAi } from "./api/index";
-import {cleanDataByAi} from "./api/index";
 // 使用 hook
 const { startLoading, stopLoading } = useLoading("正在解析中...");
 const router = useRouter();
@@ -72,17 +71,17 @@ const afterRead = async (file) => {
       startLoading();
       if (response.data && response.status === 200) {
         //!! response.data 丢给接口作为入参
-        const responseSecond = await cleanDataByAi(response.data)
-        const responseThird = await createGoalsByAi(responseSecond.data)
+        const responseSecond = await cleanDataByAi(response.data);
+        const responseThird = await createGoalsByAi(responseSecond.data);
         target.value = responseThird.data;
-          console.log("responseSecond", responseThird.data);
+        console.log("responseSecond", responseThird.data);
 
         //!! 这里还需要调用我们自己的接口，然后再关闭loading，stopLoading这里方式是关闭Loading的
         console.log("response", response);
         stopLoading();
-        
+
         // 跳转到目标列表页面
-        router.push({ name: 'target' });
+        router.push({ name: "target" });
       } else {
         console.error("OCR 识别失败:", response.data);
         stopLoading();
@@ -96,28 +95,27 @@ const afterRead = async (file) => {
 // 输入文本
 const targetContent = ref("");
 
-
 const save = async () => {
   if (!targetContent.value.trim()) {
-    console.warn('目标内容不能为空');
+    console.warn("目标内容不能为空");
     return;
   }
-  
+
   try {
     startLoading();
     const params = {
-      content: targetContent.value
+      content: targetContent.value,
     };
-    const responseSecond =await createGoalsByAi(params);
+    const responseSecond = await createGoalsByAi(params);
     console.log("responseSecond", responseSecond);
     // target.value = responseSecond.data;
     // console.log("target", target.value);
-    console.log('目标创建成功');
+    console.log("目标创建成功");
     stopLoading();
-    
+
     // 跳转到目标详情页面并传递数据
     router.push({
-      name: 'targetDetails',
+      name: "targetDetails",
       query: {
         // 生成的数据可能是数组，所以取第一个元素
         goal_id: responseSecond.data[0].id,
@@ -126,17 +124,16 @@ const save = async () => {
         actualHours: responseSecond.data[0].actualHours,
         targetListDate: JSON.stringify(responseSecond.data[0].goalTasks || []),
         startDate: responseSecond.data[0].startDate,
-        endDate: responseSecond.data[0].endDate
-      }
+        endDate: responseSecond.data[0].endDate,
+      },
     });
   } catch (error) {
-    console.error('创建目标失败:', error);
+    console.error("创建目标失败:", error);
     stopLoading();
   }
 };
 
 // 输入文本
-
 </script>
 
 <style lang="less">
@@ -173,8 +170,8 @@ const save = async () => {
   .content {
     width: 330px;
     height: 271px;
-// border: 1px solid;
-// border-image: linear-gradient(90deg, #3178DB 0%, #87EFEC 23%) 1;
+    // border: 1px solid;
+    // border-image: linear-gradient(90deg, #3178DB 0%, #87EFEC 23%) 1;
     border-radius: 0px 15px 15px 15px;
     background: #fafafa;
     box-shadow: 2px 2px 2px 0px rgba(199, 199, 199, 0.25);
@@ -182,11 +179,11 @@ const save = async () => {
     position: absolute;
     top: 207px;
     left: 25px;
-    
+
     .title {
       width: 103px;
       height: 26px;
-      background: url("../src/assets/target/bgIcon.png") no-repeat;
+      background: url("@/assets/target/bgIcon.png") no-repeat;
       font-family: "Alibaba PuHuiTi 3.0";
       font-size: 14px;
       font-weight: bold;
@@ -208,7 +205,7 @@ const save = async () => {
       width: 100%;
       height: 68.63%;
       border: none;
-      padding:14px 15px 0 16px;
+      padding: 14px 15px 0 16px;
 
       font-family: " Alibaba PuHuiTi 3.0";
       font-size: 12px;
@@ -229,14 +226,14 @@ const save = async () => {
     bottom: 0;
     border-radius: 0 15px 15px 15px;
     padding: 1px; /* 边框宽度 */
-    background: linear-gradient(90deg, #3178DB 0%, #87EFEC 23%);
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
+    background: linear-gradient(90deg, #3178db 0%, #87efec 23%);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
-}
+  }
   .box {
     display: flex;
     align-items: center;

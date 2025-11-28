@@ -121,7 +121,9 @@
           <div v-if="finishList.length === 0" class="empty-state-finished">
             <div class="empty-icon">🎉</div>
             <div class="empty-text">还没有完成的目标</div>
-            <div class="empty-encourage">每一次努力都在为成功积蓄力量，继续加油！</div>
+            <div class="empty-encourage">
+              每一次努力都在为成功积蓄力量，继续加油！
+            </div>
           </div>
         </div>
       </div>
@@ -170,12 +172,12 @@
 <script setup>
 import tabber from "@/components/tabber/index.vue";
 import topNav from "@/components/top/nosearch.vue";
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import changeTarget from "@/views/target/components/changeTarget.vue";
 import { useUserStore } from "@/store/user.js";
-import { getGoalsByUserId } from "@/views/target/api/index.js";
 import { getStudyStats } from "@/views/rank/api/index.js";
+import { getGoalsByUserId } from "@/views/target/api/index.js";
+import changeTarget from "@/views/target/components/changeTarget.vue";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 // import { showToast } from "vant";
 
 const router = useRouter();
@@ -184,7 +186,7 @@ const userStore = useUserStore();
 // 学习时长数据
 const studyTimeData = ref({
   dailyHours: 0,
-  totalHours: 0
+  totalHours: 0,
 });
 
 // 从store获取真实用户数据
@@ -215,13 +217,13 @@ const fetchGoalsList = async () => {
     const response = await getGoalsByUserId();
     if (response && response.data) {
       // 为每个目标添加默认图片
-      backlogList.value = response.data.map(goal => ({
+      backlogList.value = response.data.map((goal) => ({
         ...goal,
-        img: "../src/assets/target/targetIcon1.png" // 使用默认图片
+        img: "@/assets/target/targetIcon1.png", // 使用默认图片
       }));
     }
   } catch (error) {
-    console.error('获取目标列表失败:', error);
+    console.error("获取目标列表失败:", error);
   }
 };
 
@@ -232,11 +234,11 @@ const fetchStudyTimeData = async () => {
     if (response.data) {
       studyTimeData.value = {
         dailyHours: response.data.dailyHours || 0,
-        totalHours: response.data.totalHours || 0
+        totalHours: response.data.totalHours || 0,
       };
     }
   } catch (error) {
-    console.error('获取学习时长数据失败:', error);
+    console.error("获取学习时长数据失败:", error);
   }
 };
 
@@ -604,7 +606,7 @@ const handleDateCancel = () => {
 .index {
   width: 100%;
   height: 100%;
-    overflow-y: auto;
+  overflow-y: auto;
 
   padding-bottom: 84px;
   /* 导航栏基础高度 */
@@ -626,7 +628,6 @@ const handleDateCancel = () => {
     // height: 345px;
     // 345/667
     // height: 51.724%;
-      
 
     .title {
       z-index: 1;
@@ -762,7 +763,7 @@ const handleDateCancel = () => {
       // height: 312px;
       // height: 90.434%;
       margin: 8px auto 0 auto;
-     
+
       position: relative;
       z-index: 5;
       border-radius: 4px;
@@ -781,7 +782,7 @@ const handleDateCancel = () => {
         width: 337px;
         // height: 304.77px;
         // height: 97.67%;
-         overflow-y: auto;
+        overflow-y: auto;
         border-radius: 4px;
         background: rgba(255, 255, 255, 0.95);
         box-shadow: 0px 2px 2px 0px rgba(172, 197, 211, 0.65);
@@ -944,19 +945,19 @@ const handleDateCancel = () => {
   justify-content: center;
   padding: 40px 20px;
   text-align: center;
-  
+
   .empty-icon {
     font-size: 48px;
     margin-bottom: 16px;
   }
-  
+
   .empty-text {
     font-size: 16px;
     color: #666;
     margin-bottom: 8px;
     font-weight: 500;
   }
-  
+
   .empty-encourage {
     font-size: 14px;
     color: #999;

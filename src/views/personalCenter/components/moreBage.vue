@@ -8,39 +8,91 @@
       <img :src="userInfo.picture" alt="" class="avatar" />
     </div>
     <div class="badge-count">
-        <div class="title">
-          <img src="@/assets/rank/information/icon.png" alt="" />
-          <p>所获勋章</p>
-        </div>
-        <div class="badge-list">
-          <div
-            class="badge-small-box"
-            :class="{ 'badge-obtained': isBadgeObtained(badge) }"
-            v-for="badge in allBadges"
-            :key="badge.id"
-          >
-            <img
-              :src="getBadgeImage(badge)"
-              :alt="badge.badgeName"
-              class="badge-item"
-            />
-            <p class="badge-name">{{ badge.badgeName }}</p>
-            <p class="wait" v-if="!isBadgeObtained(badge)">待解锁</p>
-          </div>
-          <span class="text" :class="allBadges.length <= 4 ? 'position-relative' : 'position-absolute'"
-            >累计勋章
-            <span class="special">{{ obtainedBadgeCount }}</span> 块</span
-          >
-        </div>
+      <div class="title">
+        <img src="@/assets/rank/information/icon.png" alt="" />
+        <p>所获勋章</p>
       </div>
+      <div class="badge-list">
+        <div
+          class="badge-small-box"
+          :class="{ 'badge-obtained': isBadgeObtained(badge) }"
+          v-for="badge in allBadges"
+          :key="badge.id"
+        >
+          <img
+            :src="getBadgeImage(badge)"
+            :alt="badge.badgeName"
+            class="badge-item"
+          />
+          <p class="badge-name">{{ badge.badgeName }}</p>
+          <p class="wait" v-if="!isBadgeObtained(badge)">待解锁</p>
+        </div>
+        <span
+          class="text"
+          :class="
+            allBadges.length <= 4 ? 'position-relative' : 'position-absolute'
+          "
+          >累计勋章
+          <span class="special">{{ obtainedBadgeCount }}</span> 块</span
+        >
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import topNav from "@/components/top/nomal.vue";
-import { ref, onMounted, computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { getUserObtainedBadges, getUserUnobtainedBadges } from "../api/index.js";
+
+import badge1 from "@/assets/rank/badge/badge1.png";
+import badge10 from "@/assets/rank/badge/badge10.png";
+import badge11 from "@/assets/rank/badge/badge11.png";
+import badge12 from "@/assets/rank/badge/badge12.png";
+import badge13 from "@/assets/rank/badge/badge13.png";
+import badge14 from "@/assets/rank/badge/badge14.png";
+import badge15 from "@/assets/rank/badge/badge15.png";
+import badge16 from "@/assets/rank/badge/badge16.png";
+import badge17 from "@/assets/rank/badge/badge17.png";
+import badge18 from "@/assets/rank/badge/badge18.png";
+import badge19 from "@/assets/rank/badge/badge19.png";
+import badge2 from "@/assets/rank/badge/badge2.png";
+import badge20 from "@/assets/rank/badge/badge20.png";
+import badge3 from "@/assets/rank/badge/badge3.png";
+import badge4 from "@/assets/rank/badge/badge4.png";
+import badge5 from "@/assets/rank/badge/badge5.png";
+import badge6 from "@/assets/rank/badge/badge6.png";
+import badge7 from "@/assets/rank/badge/badge7.png";
+import badge8 from "@/assets/rank/badge/badge8.png";
+import badge9 from "@/assets/rank/badge/badge9.png";
+import {
+  getUserObtainedBadges,
+  getUserUnobtainedBadges,
+} from "../api/index.js";
+
+const badgeImagesArr = [
+  null,
+  badge1,
+  badge2,
+  badge3,
+  badge4,
+  badge5,
+  badge6,
+  badge7,
+  badge8,
+  badge9,
+  badge10,
+  badge11,
+  badge12,
+  badge13,
+  badge14,
+  badge15,
+  badge16,
+  badge17,
+  badge18,
+  badge19,
+  badge20,
+];
 
 const route = useRoute();
 const userInfo = ref({});
@@ -53,12 +105,12 @@ const fetchBadgesData = async () => {
   try {
     const [obtainedRes, unobtainedRes] = await Promise.all([
       getUserObtainedBadges(),
-      getUserUnobtainedBadges()
+      getUserUnobtainedBadges(),
     ]);
-    
+
     obtainedBadges.value = obtainedRes.data || [];
     unobtainedBadges.value = unobtainedRes.data || [];
-    
+
     // 合并所有勋章数据，已获得的在前
     allBadges.value = [...obtainedBadges.value, ...unobtainedBadges.value];
   } catch (error) {
@@ -76,39 +128,16 @@ onMounted(async () => {
       // 设置默认值
       userInfo.value = {
         name: "用户",
-        picture: "../src/assets/rank/picture8.png",
+        picture: badge8,
       };
     }
   }
-  
+
   // 获取勋章数据
   await fetchBadgesData();
 });
 // 徽章图片地址配置
-const badgeImages = {
-  // 获得状态的徽章 (1-10)
-  1: "src/assets/rank/badge/badge1.png",
-  2: "src/assets/rank/badge/badge2.png",
-  3: "src/assets/rank/badge/badge3.png",
-  4: "src/assets/rank/badge/badge4.png",
-  5: "src/assets/rank/badge/badge5.png",
-  6: "src/assets/rank/badge/badge6.png",
-  7: "src/assets/rank/badge/badge7.png",
-  8: "src/assets/rank/badge/badge8.png",
-  9: "src/assets/rank/badge/badge9.png",
-  10: "src/assets/rank/badge/badge10.png",
-  // 未获得状态的徽章 (11-20)
-  11: "src/assets/rank/badge/badge11.png",
-  12: "src/assets/rank/badge/badge12.png",
-  13: "src/assets/rank/badge/badge13.png",
-  14: "src/assets/rank/badge/badge14.png",
-  15: "src/assets/rank/badge/badge15.png",
-  16: "src/assets/rank/badge/badge16.png",
-  17: "src/assets/rank/badge/badge17.png",
-  18: "src/assets/rank/badge/badge18.png",
-  19: "src/assets/rank/badge/badge19.png",
-  20: "src/assets/rank/badge/badge20.png",
-};
+// badgeImages replaced by badgeImagesArr imports above
 
 // 徽章名称配置
 // const badgeNames = {
@@ -130,24 +159,27 @@ const getBadgeImage = (badge) => {
   if (badge.badgeImage) {
     return badge.badgeImage;
   }
-  
+
   // 否则使用默认图片逻辑
   const isObtained = isBadgeObtained(badge);
-  const imageIndex = isObtained ? (badge.id % 10 || 10) : ((badge.id % 10 || 10) + 10);
-  return badgeImages[imageIndex] || "src/assets/rank/badge/badge1.png"; // 默认图片
+  const imageIndex = isObtained
+    ? badge.id % 10 || 10
+    : (badge.id % 10 || 10) + 10;
+  return badgeImagesArr[imageIndex] || badge1; // 默认图片
 };
 
 // 判断徽章是否已获得
 const isBadgeObtained = (badge) => {
   // 检查该勋章是否在已获得的勋章列表中
-  return obtainedBadges.value.some(obtainedBadge => obtainedBadge.id === badge.id);
+  return obtainedBadges.value.some(
+    (obtainedBadge) => obtainedBadge.id === badge.id
+  );
 };
 
 // 计算获得的徽章数量
 const obtainedBadgeCount = computed(() => {
   return obtainedBadges.value.length;
 });
-
 </script>
 
 <style lang="less" scoped>
@@ -189,128 +221,128 @@ const obtainedBadgeCount = computed(() => {
     }
   }
   .badge-count {
-      margin-top: -10px;
-      .title {
-        display: flex;
-        justify-content: flex-start;
+    margin-top: -10px;
+    .title {
+      display: flex;
+      justify-content: flex-start;
 
-        font-family:"Alibaba PuHuiTi 2.0";
-font-size: 14px;
-font-weight: normal;
-line-height: 21px;
-letter-spacing: 0px;
-color: #000000;
-        img {
-          margin-left: 30px;
-          margin-right: 7px;
+      font-family: "Alibaba PuHuiTi 2.0";
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 21px;
+      letter-spacing: 0px;
+      color: #000000;
+      img {
+        margin-left: 30px;
+        margin-right: 7px;
+      }
+    }
+
+    .badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      row-gap: 27px;
+      column-gap: 24px;
+      margin-top: 6px;
+
+      position: relative;
+
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 8px;
+      width: 343px;
+      // height: 275px;
+      margin: 6px auto 0;
+      padding: 12px 13px 7px 14px;
+
+      .badge-small-box {
+        background: #f5f5f5;
+        position: relative;
+        box-shadow: 0px 4px 6px 0px #b7d7eb;
+        width: 61px;
+        height: 91px;
+        border-radius: 8px;
+        // margin-right: 3px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // align-content: space-around;
+        flex-direction: column;
+
+        .badge-item {
+          object-fit: contain;
+        }
+
+        .badge-name {
+          font-family: "Alibaba PuHuiTi 2.0";
+          font-size: 10px;
+          font-weight: normal;
+          line-height: 20px;
+          letter-spacing: 0px;
+
+          color: #3d3d3d;
+          text-align: center;
+          margin: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 55px;
+        }
+
+        .wait {
+          font-size: 7px;
+        }
+
+        // 已获得徽章的样式
+        &.badge-obtained {
+          background: #f5f5f5;
+          border: 1px solid #2884ed;
+
+          box-shadow: 0px 4px 6px 0px #b7d7eb;
+
+          .badge-name {
+            color: #2884ed;
+            font-weight: 500;
+          }
         }
       }
 
-      .badge-list {
-        display: flex;
-        flex-wrap: wrap;
-        row-gap: 27px;
-        column-gap: 24px;
-        margin-top: 6px;
+      .text {
+        font-family: "Alibaba PuHuiTi 2.0";
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 20px;
+        text-align: center;
+        letter-spacing: 0px;
+        color: #000000;
 
-        position: relative;
-
-        background: rgba(255, 255, 255, 0.4);
-        border-radius: 8px;
-        width: 343px;
-        // height: 275px;
-        margin: 6px auto 0;
-        padding: 12px 13px 7px 14px;
-
-        .badge-small-box {
-          background: #f5f5f5;
-          position: relative;
-          box-shadow: 0px 4px 6px 0px #b7d7eb;
-          width: 61px;
-          height: 91px;
-          border-radius: 8px;
-          // margin-right: 3px;
-
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          // align-content: space-around;
-          flex-direction: column;
-
-          .badge-item {
-            object-fit: contain;
-          }
-
-          .badge-name {
-            font-family: "Alibaba PuHuiTi 2.0";
-            font-size: 10px;
-            font-weight: normal;
-            line-height: 20px;
-            letter-spacing: 0px;
-
-            color: #3d3d3d;
-            text-align: center;
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 55px;
-          }
-
-          .wait {
-            font-size: 7px;
-          }
-
-          // 已获得徽章的样式
-          &.badge-obtained {
-            background: #f5f5f5;
-            border: 1px solid #2884ed;
-
-            box-shadow: 0px 4px 6px 0px #b7d7eb;
-
-            .badge-name {
-              color: #2884ed;
-              font-weight: 500;
-            }
-          }
+        // 当勋章数量大于4个时，使用绝对定位
+        &.position-absolute {
+          position: absolute;
+          left: 204px;
+          bottom: 46px;
         }
 
-        .text {
-          font-family: "Alibaba PuHuiTi 2.0";
-          font-size: 14px;
-          font-weight: normal;
-          line-height: 20px;
-          text-align: center;
-          letter-spacing: 0px;
-          color: #000000;
-          
-          // 当勋章数量大于4个时，使用绝对定位
-          &.position-absolute {
-            position: absolute;
-            left: 204px;
-            bottom: 46px;
-          }
-          
-          // 当勋章数量小于等于4个时，另起一行显示在右下角
-          &.position-relative {
-            width: 100%;
-            text-align: right;
-            margin-bottom: 20px;
-            padding-right: 24px;
-          }
+        // 当勋章数量小于等于4个时，另起一行显示在右下角
+        &.position-relative {
+          width: 100%;
+          text-align: right;
+          margin-bottom: 20px;
+          padding-right: 24px;
+        }
 
-          .special {
-            font-family: "Sansita One";
-            font-size: 36px;
-            font-weight: normal;
-            line-height: 40px;
-            letter-spacing: 0px;
-            text-shadow: 0px 4px 10px rgba(255, 255, 255, 0.3);
-            color: #3fb3fb;
-            margin: 9px 0px;
-          }
+        .special {
+          font-family: "Sansita One";
+          font-size: 36px;
+          font-weight: normal;
+          line-height: 40px;
+          letter-spacing: 0px;
+          text-shadow: 0px 4px 10px rgba(255, 255, 255, 0.3);
+          color: #3fb3fb;
+          margin: 9px 0px;
         }
       }
     }
+  }
 }
 </style>
