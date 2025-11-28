@@ -8,8 +8,8 @@ import nprogress from 'nprogress';
 
 import 'nprogress/nprogress.css';
 
-// 设置基础URL
-const baseURL = 'http://47.109.142.124:8080';
+// 设置基础URL（使用本地代理以避免混合内容问题）
+const baseURL = '/api/proxy';
 
 // 数据转换函数：将对象转换为 form-urlencoded 格式
 const transformData = (data) => {

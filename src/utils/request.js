@@ -16,7 +16,8 @@ import 'nprogress/nprogress.css';
 // const baseURL = `http://116.62.102.235:${VITE_PORT}`;
 // 修复：移除未定义的VITE_PORT变量，直接使用Apifox的完整URL
 // const baseURL = 'http://127.0.0.1:4523/m1/6758131-6469989-default';
-const baseURL = 'http://47.109.142.124:8080';
+// Use Vercel proxy to avoid mixed-content/CORS issues in production
+const baseURL = '/api/proxy';
 
 // 创建axios实例
 const service = axios.create({

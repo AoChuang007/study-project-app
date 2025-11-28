@@ -2,8 +2,9 @@ import request from '@/utils/request'
 import axios from 'axios'
 
 // 创建专门用于流式响应的axios实例，不使用拦截器
+// 使用本地代理路径，避免浏览器混合内容阻止和 CORS 问题
 const streamRequest = axios.create({
-  baseURL: 'http://47.109.142.124:8080',
+  baseURL: '/api/proxy',
   timeout: 120 * 1000
 });
 
