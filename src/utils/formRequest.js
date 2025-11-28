@@ -9,7 +9,8 @@ import nprogress from "nprogress";
 import "nprogress/nprogress.css";
 
 // 设置基础URL：前端直接请求后端（由环境变量控制）
-const baseURL = import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
+const baseURL =
+  import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
 
 // 数据转换函数：将对象转换为 form-urlencoded 格式
 const transformData = (data) => {

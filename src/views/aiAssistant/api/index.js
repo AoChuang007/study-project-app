@@ -4,7 +4,8 @@ import axios from "axios";
 // 创建专门用于流式响应的axios实例，不使用拦截器
 // 生产环境通过 Vercel proxy 代理后端，开发环境直连后端
 const streamRequest = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080",
+  baseURL:
+    import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080",
   timeout: 120 * 1000,
 });
 
