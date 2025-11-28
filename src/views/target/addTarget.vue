@@ -2,7 +2,7 @@
   <div class="index">
     <topNav title="创建新目标"></topNav>
     <!-- <div class="hello">hello</div> -->
-    <img src="@/assets/target/hello.png" alt="" class="hello" />
+    <img src="@/assets/target/Hello.png" alt="" class="hello" />
     <p class="text">快来创建你的新目标吧~</p>
     <img src="@/assets/target/people.png" alt="" class="people" />
     <div class="content">
