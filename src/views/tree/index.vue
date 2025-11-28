@@ -53,7 +53,12 @@
             </div>
           </div>
           <div class="starGroup">
-            <img v-for="i in 3" :key="i" :src="getStarImage(level, i)" alt="" />
+            <img
+              v-for="(i, index) in 3"
+              :key="index"
+              :src="getStarImage(level, i)"
+              alt=""
+            />
           </div>
         </div>
       </div>
