@@ -38,6 +38,9 @@ export default async function handler(req, res) {
       }
     }
 
+    // Debug log: which backend URL we call
+    console.log('[proxy] ->', req.method, url);
+
     const backendRes = await fetch(url, fetchOptions);
 
     // Copy status
@@ -51,6 +54,20 @@ export default async function handler(req, res) {
 
     const arrayBuffer = await backendRes.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+
+    // If backend returned non-2xx, also log the body for debugging
+    if (backendRes.status >= 400) {
+      try {
+        const text = buffer.toString('utf8');
+        console.error('[proxy] backend error', backendRes.status, text);
+        // Forward body as-is
+        res.send(buffer);
+        return;
+      } catch (e) {
+        console.error('[proxy] error reading backend body', e);
+      }
+    }
+
     res.send(buffer);
   } catch (err) {
     console.error('Proxy error:', err);
