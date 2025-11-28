@@ -2,7 +2,7 @@ import router from "@/router";
 import axios from "axios";
 import { showToast } from "vant";
 
-import { removeToken, getToken } from "@/utils/auth";
+import { getToken, removeToken } from "@/utils/auth";
 
 import nprogress from "nprogress";
 
@@ -15,8 +15,10 @@ import "nprogress/nprogress.css";
 
 // const baseURL = `http://116.62.102.235:${VITE_PORT}`;
 // 修复：移除未定义的VITE_PORT变量，直接使用Apifox的完整URL
-// const baseURL = 'http://127.0.0.1:4523/m1/6758131-6469989-default';
-const baseURL = "http://47.109.142.124:8080";
+// 在生产（部署到 Vercel）使用 serverless 代理，开发环境仍直连后端。
+const baseURL = import.meta.env.PROD
+  ? "/api/proxy"
+  : "http://47.109.142.124:8080";
 
 // 创建axios实例
 const service = axios.create({
