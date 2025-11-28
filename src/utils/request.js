@@ -15,10 +15,9 @@ import "nprogress/nprogress.css";
 
 // const baseURL = `http://116.62.102.235:${VITE_PORT}`;
 // 修复：移除未定义的VITE_PORT变量，直接使用Apifox的完整URL
-// 在生产（部署到 Vercel）使用 serverless 代理，开发环境仍直连后端。
-const baseURL = import.meta.env.PROD
-  ? "/api/proxy"
-  : "http://47.109.142.124:8080";
+// 前端直接请求后端地址。通过环境变量 `VITE_BACKEND_BASE_URL` 指定后端地址。
+// 在本地开发时，请在 `.env` 或运行时指定 `VITE_BACKEND_BASE_URL`，默认回退到后端 IP 地址。
+const baseURL = import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
 
 // 创建axios实例
 const service = axios.create({
