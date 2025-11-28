@@ -1,6 +1,6 @@
 import useSettingsStore from "@/store/modules/settings";
-import setPageTitle from "@/utils/set-page-title";
 import { trackPageView } from "@/utils/analytics";
+import setPageTitle from "@/utils/set-page-title";
 import { createRouter, createWebHashHistory } from "vue-router";
 
 let routes = [
@@ -19,19 +19,6 @@ let routes = [
     name: "Index",
     meta: { title: "首页", keepAlive: true },
     component: () => import("@/views/index/index.vue"),
-  },
-  {
-    path: "/baodian",
-    name: "baodian",
-    meta: { title: "宝典" },
-    component: () => import("@/views/baoDian/index.vue"),
-    children: [
-      {
-        path: "content",
-        name: "content",
-        component: () => import("@/views/baoDian/components/content.vue"),
-      },
-    ],
   },
   {
     path: "/login",
