@@ -15,12 +15,6 @@ let routes = [
     component: () => import("@/views/testError/index.vue"),
   },
   {
-    path: "/index",
-    name: "Index",
-    meta: { title: "首页", keepAlive: true },
-    component: () => import("@/views/index/index.vue"),
-  },
-  {
     path: "/login",
     name: "Login",
     meta: { title: "登录页" },
