@@ -4,8 +4,7 @@ import axios from "axios";
 // 创建专门用于流式响应的axios实例，不使用拦截器
 // 生产环境通过 Vercel proxy 代理后端，开发环境直连后端
 const streamRequest = axios.create({
-  baseURL:
-    import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080",
+  baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn",
   timeout: 120 * 1000,
 });
 
@@ -17,6 +16,7 @@ export const sendMessageToAI = async (text, onChunk) => {
       url: "/api/goals/talkToAi", // 替换为真实的API端点
       method: "GET",
       params: {
+        mode: 1,
         text: text, // 使用text作为查询参数
       },
       // 如果后端支持流式响应，可以配置responseType

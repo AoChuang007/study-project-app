@@ -17,8 +17,9 @@ import "nprogress/nprogress.css";
 // 修复：移除未定义的VITE_PORT变量，直接使用Apifox的完整URL
 // 前端直接请求后端地址。通过环境变量 `VITE_BACKEND_BASE_URL` 指定后端地址。
 // 在本地开发时，请在 `.env` 或运行时指定 `VITE_BACKEND_BASE_URL`，默认回退到后端 IP 地址。
+// http://47.109.142.124:8080
 const baseURL =
-  import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
+  import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn";
 
 // 创建axios实例
 const service = axios.create({
