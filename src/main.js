@@ -75,7 +75,7 @@ try {
     console.warn("⚠️ Sentry.metrics API 不可用");
   }
 } catch (error) {
-  console.error("❌ Sentry metrics 发送失败:", error);
+  console.error("❌ Sentry metrics 发送失败111:", error);
 }
 
 // 初始化用户追踪和统计
