@@ -15,6 +15,12 @@ let routes = [
     component: () => import("@/views/testError/index.vue"),
   },
   {
+    path: "/workflow",
+    name: "WorkFlow",
+    meta: { title: "工作流" },
+    component: () => import("@/views/workflow/index.vue"),
+  },
+  {
     path: "/login",
     name: "Login",
     meta: { title: "登录页" },

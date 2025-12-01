@@ -87,7 +87,7 @@ setupGlobDirectives(app);
 // 注册全局组件
 registerGlobComp(app);
 // 设计稿 rem 适配
-initRem();
+// initRem();
 
 app.component(Cell.name, Cell);
 app.component(CellGroup.name, CellGroup);
