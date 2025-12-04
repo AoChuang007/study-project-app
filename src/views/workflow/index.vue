@@ -14,18 +14,23 @@
     >
       <button
         @click="executeWorkflow"
-        style="
-          padding: 8px 16px;
-          background: #3498db;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        "
+        :disabled="isLoading"
+        :style="{
+          padding: '8px 16px',
+          background: isLoading ? '#95a5a6' : '#3498db',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: isLoading ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }"
       >
-        执行工作流
+        <span v-if="isLoading" class="loading-spinner"></span>
+        {{ isLoading ? "正在加载..." : "执行工作流" }}
       </button>
-      <span v-if="executionResult" style="margin-left: 10px">{{
+      <span v-if="executionStatus" style="margin-left: 10px">{{
         executionStatus
       }}</span>
     </div>
@@ -48,17 +53,7 @@
       >
         <div>
           <h3 style="margin-top: 0">执行结果</h3>
-          <pre
-            style="
-              white-space: pre-wrap;
-              word-wrap: break-word;
-              background: white;
-              padding: 15px;
-              border-radius: 4px;
-              font-size: 12px;
-            "
-            >{{ executionResult }}</pre
-          >
+          <MarkdownRenderer :content="executionResult" />
         </div>
         <div v-if="flowchartData" style="flex: 1; min-height: 400px">
           <h3 style="margin-top: 0; margin-bottom: 10px">流程图可视化</h3>
@@ -80,9 +75,14 @@ import {
 
 import "@baklavajs/themes/dist/syrup-dark.css";
 
+import { ElLoading, ElMessage } from "element-plus";
+import "element-plus/es/components/loading/style/css";
+import "element-plus/es/components/message/style/css";
 import { defineComponent, ref } from "vue";
 
+import { getWorkFlowData } from "./api/index";
 import G6FlowchartViewer from "./components/G6FlowchartViewer.vue";
+import MarkdownRenderer from "./components/MarkdownRenderer.vue";
 import { execType, numberType } from "./interfaces/InterfaceType";
 import { CustomNode } from "./nodes/CustomNode";
 import { DataDisplayNode } from "./nodes/DataDisplayNode";
@@ -91,7 +91,11 @@ import { DisplayNode } from "./nodes/DisplayNode";
 import { ImageNode } from "./nodes/ImageNode";
 import { MathNode } from "./nodes/MathNode";
 import { MindMapNode } from "./nodes/MindMapNode";
-import { MockDataNode } from "./nodes/MockDataNode";
+import {
+  MockDataNode,
+  getMockNodeKeyword,
+  setMockNodeApiData,
+} from "./nodes/MockDataNode";
 import { QueueNode } from "./nodes/QueueNode";
 // import { MinimapPlugin } from "@baklavajs/plugin-minimap";
 
@@ -99,6 +103,7 @@ export default defineComponent({
   components: {
     "baklava-editor": EditorComponent,
     G6FlowchartViewer,
+    MarkdownRenderer,
   },
   setup() {
     const baklava = useBaklava();
@@ -108,6 +113,7 @@ export default defineComponent({
     const executionStatus = ref("");
     const showResult = ref(false);
     const flowchartData = ref(null);
+    const isLoading = ref(false);
 
     engine.start();
 
@@ -162,66 +168,115 @@ export default defineComponent({
       engine.resume();
     });
 
-    // Add some nodes for demo purposes
-    function addNodeWithCoordinates(nodeType, x, y) {
-      const n = new nodeType();
-      baklava.displayedGraph.addNode(n);
-      n.position.x = x;
-      n.position.y = y;
-      return n;
-    }
-
-    // 创建演示节点 - 数据处理流程
-    const mockNode = addNodeWithCoordinates(MockDataNode, 100, 100);
-    const filterNode = addNodeWithCoordinates(DataFilterNode, 400, 100);
-    const displayNode = addNodeWithCoordinates(DataDisplayNode, 750, 100);
-    const mindMapNode = addNodeWithCoordinates(MindMapNode, 750, 350);
-
-    // 连接数据处理流程
-    baklava.displayedGraph.addConnection(
-      mockNode.outputs.data,
-      filterNode.inputs.data
-    );
-    baklava.displayedGraph.addConnection(
-      filterNode.outputs.filteredData,
-      displayNode.inputs.data
-    );
-    baklava.displayedGraph.addConnection(
-      filterNode.outputs.filteredData,
-      mindMapNode.inputs.data
-    );
+    // 节点引用，用于执行工作流时获取
+    let mockNode = null;
+    let filterNode = null;
+    let displayNode = null;
+    let mindMapNode = null;
 
     // 执行工作流函数
     const executeWorkflow = async () => {
+      // 从当前图中获取节点
+      const nodes = baklava.displayedGraph.nodes;
+      mockNode = nodes.find((n) => n.type === "MockDataNode");
+      filterNode = nodes.find((n) => n.type === "DataFilterNode");
+      displayNode = nodes.find((n) => n.type === "DataDisplayNode");
+      mindMapNode = nodes.find((n) => n.type === "MindMapNode");
+
+      // 检查必要的节点是否存在
+      if (!mockNode) {
+        ElMessage.warning("请先添加「工作流输入节点」到画布中");
+        return;
+      }
+
+      // 获取 MockDataNode 中的关键词输入
+      const keyword = getMockNodeKeyword(mockNode);
+      console.log("获取到的关键词:", keyword);
+
+      // 检查关键词是否为空
+      if (!keyword || keyword.trim() === "") {
+        ElMessage.warning("请在「工作流输入节点」中输入您想要查询的关键词");
+        return;
+      }
+
+      // 开始加载 - 使用 Element Plus Loading
+      const loadingInstance = ElLoading.service({
+        lock: true,
+        text: "正在获取学习路线数据...",
+        background: "rgba(255, 255, 255, 0.8)",
+      });
+
       try {
+        isLoading.value = true;
         executionStatus.value = "正在执行...";
-        showResult.value = true;
+
+        // 调用 API 获取数据
+        try {
+          const apiResponse = await getWorkFlowData(keyword);
+          console.log("API 返回数据:", apiResponse);
+
+          // 接口返回格式: { success: true, data: [...], total: 5, timestamp: "..." }
+          if (apiResponse && apiResponse.success && apiResponse.data) {
+            setMockNodeApiData({
+              success: true,
+              data: apiResponse.data,
+              total: apiResponse.total || apiResponse.data.length,
+              timestamp: apiResponse.timestamp || new Date().toISOString(),
+            });
+          }
+        } catch (apiError) {
+          console.warn("API 调用失败，使用 Mock 数据:", apiError);
+          // API 调用失败时不设置数据，将使用默认 Mock 数据
+        }
 
         // 手动触发节点计算
         const mockResult = mockNode.calculate();
-        const filterResult = filterNode.calculate({
-          data: mockResult.data,
-          filterType: filterNode.inputs.filterType.value,
-          filterLevel: filterNode.inputs.filterLevel.value,
-          keyword: filterNode.inputs.keyword.value,
-        });
-        const displayResult = displayNode.calculate({
-          data: filterResult.filteredData,
-          displayFormat: displayNode.inputs.displayFormat.value,
-        });
-        const mindMapResult = mindMapNode.calculate({
-          data: filterResult.filteredData,
-        });
 
-        console.log("MindMap Result:", mindMapResult);
-        console.log("Visualization Data:", mindMapResult.visualization);
+        let finalData = mockResult.data;
 
-        executionResult.value = displayResult.output;
-        flowchartData.value = mindMapResult.visualization;
+        // 如果有筛选节点，则进行筛选
+        if (filterNode) {
+          const filterResult = filterNode.calculate({
+            data: mockResult.data,
+            filterType: filterNode.inputs.filterType.value,
+            filterLevel: filterNode.inputs.filterLevel.value,
+            keyword: filterNode.inputs.keyword.value,
+          });
+          finalData = filterResult.filteredData;
+        }
+
+        // 如果有展示节点，则进行展示
+        if (displayNode) {
+          const displayResult = displayNode.calculate({
+            data: finalData,
+            displayFormat: displayNode.inputs.displayFormat.value,
+          });
+          executionResult.value = displayResult.output;
+        } else {
+          // 没有展示节点时，直接显示 JSON
+          executionResult.value = finalData;
+        }
+
+        // 如果有思维导图节点，则生成可视化
+        if (mindMapNode) {
+          const mindMapResult = mindMapNode.calculate({
+            data: finalData,
+          });
+          console.log("MindMap Result:", mindMapResult);
+          console.log("Visualization Data:", mindMapResult.visualization);
+          flowchartData.value = mindMapResult.visualization;
+        }
+
+        showResult.value = true;
         executionStatus.value = "执行成功！";
+        ElMessage.success("工作流执行成功");
       } catch (error) {
         executionResult.value = `执行错误: ${error.message}`;
         executionStatus.value = "执行失败";
+        ElMessage.error(`执行失败: ${error.message}`);
+      } finally {
+        isLoading.value = false;
+        loadingInstance.close();
       }
     };
 
@@ -234,6 +289,7 @@ export default defineComponent({
       executionStatus,
       showResult,
       flowchartData,
+      isLoading,
     };
   },
 });
@@ -241,5 +297,21 @@ export default defineComponent({
 <style>
 #app {
   max-width: none !important;
+}
+
+/* 小型加载动画 - 用于按钮 */
+.loading-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

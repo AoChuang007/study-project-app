@@ -22,6 +22,7 @@ export const DataFilterNode = defineNode({
         "全部",
         "基础路线",
         "进阶路线",
+        "框架路线",
         "高级路线",
       ]).setPort(false),
     filterLevel: () =>

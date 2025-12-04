@@ -1,4 +1,7 @@
 import { registerGlobComp } from "@/components/registerGlobComp";
+import { initUserTracking, trackUniqueVisitor } from "@/utils/analytics";
+import { initRem } from "@/utils/rem";
+import * as Sentry from "@sentry/vue";
 import {
   Cell,
   CellGroup,
@@ -22,9 +25,6 @@ import {
 import { createApp } from "vue";
 import App from "./App.vue";
 import { setupGlobDirectives } from "./directives";
-import { initRem } from "./utils/rem";
-import * as Sentry from "@sentry/vue";
-import { initUserTracking, trackUniqueVisitor } from "@/utils/analytics";
 
 const app = createApp(App);
 
@@ -86,8 +86,7 @@ trackUniqueVisitor();
 setupGlobDirectives(app);
 // 注册全局组件
 registerGlobComp(app);
-// 设计稿 rem 适配
-// initRem();
+// 设计稿 rem 适配由路由参数控制（isOpenAdaptive=true 不启用 rem）
 
 app.component(Cell.name, Cell);
 app.component(CellGroup.name, CellGroup);
@@ -112,3 +111,14 @@ app
   .use(Toast)
   .use(FloatingBubble)
   .mount("#app");
+
+// 在路由就绪后安全地读取查询参数（例如 isOpenAdaptive）
+router.isReady().then(() => {
+  const query = router.currentRoute.value?.query || {};
+  const isOpenAdaptive = query.isOpenAdaptive;
+  app.config.globalProperties.$isOpenAdaptive = isOpenAdaptive;
+  const adaptiveOn = isOpenAdaptive === true || isOpenAdaptive === "true";
+  if (!adaptiveOn) {
+    initRem();
+  }
+});

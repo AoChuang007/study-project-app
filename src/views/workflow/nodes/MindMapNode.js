@@ -1,22 +1,10 @@
 import { defineNode, NodeInterface, TextInterface, setType } from "baklavajs";
-import { markRaw } from "vue";
 
 import { execType, stringType } from "../interfaces/InterfaceType";
 
-// 自定义脑图组件接口 - 使用 G6 流程图
-import G6FlowchartViewer from "../components/G6FlowchartViewer.vue";
-
-class MindMapInterface extends NodeInterface {
-  constructor(name, value) {
-    super(name, value);
-    this.setComponent(markRaw(G6FlowchartViewer));
-    this.setPort(false);
-  }
-}
-
 export const MindMapNode = defineNode({
   type: "MindMapNode",
-  title: "脑图可视化",
+  title: "图表可视化",
   inputs: {
     exec_pin: () =>
       new TextInterface("执行").setPort(true).use(setType, execType),
@@ -25,7 +13,7 @@ export const MindMapNode = defineNode({
   },
   outputs: {
     exec_pin: () => new TextInterface().setPort(true).use(setType, execType),
-    mindMapData: () => new NodeInterface("脑图数据").use(setType, stringType),
+    mindMapData: () => new NodeInterface("图表数据").use(setType, stringType),
   },
   calculate({ data }) {
     try {

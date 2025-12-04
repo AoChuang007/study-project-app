@@ -149,7 +149,7 @@ const initGraph = () => {
       node: {
         type: "rect",
         style: {
-          size: [160, 40],
+          size: [200, 40],
           radius: 8,
           fill: theme.node.fill,
           stroke: theme.node.stroke,
@@ -157,7 +157,7 @@ const initGraph = () => {
           labelText: (d) => d.data?.label || d.id,
           labelFill: theme.node.labelFill,
           labelFontSize: 20,
-          labelMaxWidth: 150,
+          labelMaxWidth: 190,
           labelWordWrap: true,
           labelTextAlign: "center",
           labelTextBaseline: "middle",

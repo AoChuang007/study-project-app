@@ -1,3 +1,9 @@
+/*
+ * @Author: Chuang Ao chuang.ao@ly.com
+ * @LastEditors: Chuang Ao chuang.ao@ly.com
+ * @LastEditTime: 2025-12-04 17:49:26
+ * @FilePath: /study-ai-zy-dev_0602 2/src/views/workflow/nodes/DataDisplayNode.js
+ */
 import {
   defineNode,
   NodeInterface,
@@ -43,16 +49,20 @@ export const DataDisplayNode = defineNode({
           output += `${index + 1}. ${item.title}\n`;
           output += `   类型: ${item.type} | 级别: ${item.level} | 时长: ${item.duration}\n`;
           output += `   内容: ${item.content}\n`;
+          if (item.courseUrl) {
+            output += `   课程链接: ${item.courseUrl}\n`;
+          }
           if (item.steps) {
             output += `   步骤: ${item.steps.join(" → ")}\n`;
           }
           output += `\n`;
         });
       } else if (displayFormat === "表格") {
-        output = "序号 | 标题 | 类型 | 级别 | 时长\n";
-        output += "---|---|---|---|---\n";
+        output = "序号 | 标题 | 类型 | 级别 | 时长 | 课程链接\n";
+        output += "---|---|---|---|---|---\n";
         dataArray.forEach((item, index) => {
-          output += `${index + 1} | ${item.title} | ${item.type} | ${item.level} | ${item.duration}\n`;
+          const courseLink = item.courseUrl ? `[链接](${item.courseUrl})` : "-";
+          output += `${index + 1} | ${item.title} | ${item.type} | ${item.level} | ${item.duration} | ${courseLink}\n`;
         });
       } else if (displayFormat === "摘要") {
         const typeCount = {};
@@ -79,6 +89,7 @@ export const DataDisplayNode = defineNode({
         output: output,
       };
     } catch (error) {
+      console.log("1111", error);
       return {
         exec_pin: true,
         output: `展示错误: ${error.message}\n原始数据: ${data}`,

@@ -69,12 +69,12 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
-import { showToast } from "vant";
-import { getSms, getUserLogin } from "./api/index";
-import { setToken } from "@/utils/auth";
 import { useUserStore } from "@/store/user";
+import { setToken } from "@/utils/auth";
+import { showToast } from "vant";
+import { onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { getSms, getUserLogin } from "./api/index";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -122,16 +122,16 @@ const getSmsCode = async () => {
     // 添加重试机制
     let retryCount = 0;
     const maxRetries = 2;
-    
+
     const sendSmsWithRetry = async () => {
       try {
         await getSms(formData.value.phone);
         return true;
       } catch (error) {
-        if (error.code === 'ECONNABORTED' && retryCount < maxRetries) {
+        if (error.code === "ECONNABORTED" && retryCount < maxRetries) {
           retryCount++;
           showToast(`网络超时，正在重试... (${retryCount}/${maxRetries})`);
-          await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒后重试
+          await new Promise((resolve) => setTimeout(resolve, 2000)); // 等待2秒后重试
           return sendSmsWithRetry();
         }
         throw error;
@@ -188,7 +188,7 @@ const handleLogin = async () => {
         const userInfo = { ...res.data };
         // 移除敏感信息
         delete userInfo.token;
-        console.log(userInfo)
+        console.log(userInfo);
         userStore.setUserInfo(userInfo);
       }
       showToast("登录成功");
