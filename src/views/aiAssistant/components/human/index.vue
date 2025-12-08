@@ -1,7 +1,7 @@
 <!--
  * @Author: Chuang Ao chuang.ao@ly.com
  * @LastEditors: Chuang Ao chuang.ao@ly.com
- * @LastEditTime: 2025-12-08 16:46:12
+ * @LastEditTime: 2025-12-08 17:09:39
  * @FilePath: /study-ai-zy-dev_0602 2/src/views/aiAssistant/components/human/index.vue
 -->
 <template>
@@ -14,16 +14,31 @@
       <van-button @click="playVoice">发声</van-button>
       <van-button @click="switchModel">切换模型</van-button>
       <van-button
-        @click="toggleRecognition"
+        @touchstart="startRecording"
+        @touchend="stopRecording"
+        @mousedown="startRecording"
+        @mouseup="stopRecording"
+        @mouseleave="handleMouseLeave"
         :type="isRecording ? 'danger' : 'primary'"
+        :loading="isRecording"
       >
-        {{ isRecording ? "停止识别" : "语音识别" }}
+        {{ isRecording ? "录音中..." : "按住说话" }}
       </van-button>
     </div>
 
-    <!-- 识别结果显示 -->
-    <div v-if="recognizedText" class="recognized-text">
-      <p>识别结果: {{ recognizedText }}</p>
+    <!-- 录音状态和结果显示 -->
+    <div v-if="isRecording || audioBlob" class="recording-status">
+      <div v-if="isRecording" class="recording-indicator">
+        <div class="pulse"></div>
+        <span>正在录音...</span>
+      </div>
+      <div v-else-if="audioBlob" class="audio-result">
+        <p>录音完成,时长: {{ recordingDuration }}s</p>
+        <van-button size="small" @click="playRecording">播放录音</van-button>
+        <van-button size="small" type="success" @click="uploadRecording"
+          >发送</van-button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -39,10 +54,14 @@ const app = new Application();
 const selectedModel = ref("hiyori");
 let currentSprite: Live2DSprite | null = null;
 
-// 语音识别相关
+// 录音相关
 const isRecording = ref(false);
-const recognizedText = ref("");
-let recognition: any = null;
+const audioBlob = ref<Blob | null>(null);
+const recordingDuration = ref(0);
+let mediaRecorder: MediaRecorder | null = null;
+let audioChunks: Blob[] = [];
+let recordingStartTime = 0;
+let recordingTimer: any = null;
 
 // 模型配置
 const modelConfigs = {
@@ -151,121 +170,130 @@ const switchModel = async () => {
   await loadSelectedModel();
 };
 
-// 初始化语音识别
-const initSpeechRecognition = () => {
-  // 检查协议
-  if (
-    location.protocol === "http:" &&
-    location.hostname !== "localhost" &&
-    location.hostname !== "127.0.0.1"
-  ) {
-    showToast({
-      message: "语音识别需要 HTTPS 环境",
-      type: "fail",
-      duration: 3000,
+// 开始录音
+const startRecording = async () => {
+  if (isRecording.value) return;
+
+  try {
+    // 请求麦克风权限
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // 创建 MediaRecorder
+    mediaRecorder = new MediaRecorder(stream, {
+      mimeType: "audio/webm;codecs=opus",
     });
-    return null;
-  }
 
-  // 兼容性处理
-  const SpeechRecognition =
-    (window as any).SpeechRecognition ||
-    (window as any).webkitSpeechRecognition;
+    audioChunks = [];
+    recordingStartTime = Date.now();
 
-  if (!SpeechRecognition) {
-    showToast({ message: "当前浏览器不支持语音识别", type: "fail" });
-    return null;
-  }
-
-  const recognitionInstance = new SpeechRecognition();
-
-  // 配置识别参数
-  recognitionInstance.lang = "zh-CN"; // 设置中文识别
-  recognitionInstance.continuous = true; // 持续识别
-  recognitionInstance.interimResults = true; // 返回临时结果
-  recognitionInstance.maxAlternatives = 1; // 只返回一个结果
-
-  // 识别开始
-  recognitionInstance.onstart = () => {
-    console.log("语音识别已开始");
-    isRecording.value = true;
-    showToast({ message: "开始识别,请说话...", duration: 1500 });
-  };
-
-  // 识别结果
-  recognitionInstance.onresult = (event: any) => {
-    let interimTranscript = "";
-    let finalTranscript = "";
-
-    // 遍历识别结果
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      const transcript = event.results[i][0].transcript;
-      if (event.results[i].isFinal) {
-        finalTranscript += transcript;
-      } else {
-        interimTranscript += transcript;
+    // 数据可用时收集
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunks.push(event.data);
       }
-    }
-
-    // 更新显示文本(优先显示最终结果)
-    recognizedText.value = finalTranscript || interimTranscript;
-
-    if (finalTranscript) {
-      console.log("识别完成:", finalTranscript);
-    }
-  };
-
-  // 识别错误
-  recognitionInstance.onerror = (event: any) => {
-    console.error("识别错误:", event.error);
-
-    // 根据不同错误类型显示提示
-    const errorMessages: Record<string, string> = {
-      "no-speech": "没有检测到语音,请重试",
-      "audio-capture": "无法捕获音频,请检查麦克风",
-      "not-allowed": "麦克风权限被拒绝,请在浏览器设置中允许麦克风访问",
-      network: "网络错误,请检查网络连接",
-      aborted: "识别已中止",
-      "service-not-allowed": "语音识别服务不可用",
     };
 
-    const message = errorMessages[event.error] || `识别错误: ${event.error}`;
-    showToast({ message, type: "fail", duration: 3000 });
+    // 录音停止时处理
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunks, { type: "audio/webm" });
+      audioBlob.value = blob;
+      recordingDuration.value = Math.round(
+        (Date.now() - recordingStartTime) / 1000
+      );
 
-    isRecording.value = false;
-  };
+      // 停止所有音轨
+      stream.getTracks().forEach((track) => track.stop());
 
-  // 识别结束
-  recognitionInstance.onend = () => {
-    console.log("语音识别已结束");
-    isRecording.value = false;
-  };
+      showToast({ message: "录音完成", type: "success" });
+    };
 
-  return recognitionInstance;
+    // 开始录音
+    mediaRecorder.start();
+    isRecording.value = true;
+
+    // 启动计时器
+    recordingTimer = setInterval(() => {
+      recordingDuration.value = Math.round(
+        (Date.now() - recordingStartTime) / 1000
+      );
+    }, 100);
+  } catch (error: any) {
+    console.error("录音启动失败:", error);
+    if (error.name === "NotAllowedError") {
+      showToast({ message: "请允许使用麦克风权限", type: "fail" });
+    } else if (error.name === "NotFoundError") {
+      showToast({ message: "未找到麦克风设备", type: "fail" });
+    } else {
+      showToast({ message: "无法启动录音", type: "fail" });
+    }
+  }
 };
 
-// 切换语音识别
-const toggleRecognition = () => {
-  if (!recognition) {
-    recognition = initSpeechRecognition();
-    if (!recognition) return;
+// 停止录音
+const stopRecording = () => {
+  if (!isRecording.value || !mediaRecorder) return;
+
+  if (recordingTimer) {
+    clearInterval(recordingTimer);
+    recordingTimer = null;
   }
 
+  if (mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  }
+
+  isRecording.value = false;
+};
+
+// 处理鼠标离开按钮
+const handleMouseLeave = () => {
   if (isRecording.value) {
-    recognition.stop();
-    showToast({ message: "停止识别" });
-  } else {
-    recognizedText.value = "";
-    try {
-      // 直接启动识别,浏览器会自动请求麦克风权限
-      recognition.start();
-    } catch (error: any) {
-      console.error("启动识别失败:", error);
-      showToast({
-        message: "语音识别启动失败,请刷新页面重试",
-        type: "fail",
-      });
-    }
+    stopRecording();
+  }
+};
+
+// 播放录音
+const playRecording = () => {
+  if (!audioBlob.value) return;
+
+  const audioUrl = URL.createObjectURL(audioBlob.value);
+  const audio = new Audio(audioUrl);
+  audio.play();
+
+  audio.onended = () => {
+    URL.revokeObjectURL(audioUrl);
+  };
+};
+
+// 上传/发送录音
+const uploadRecording = async () => {
+  if (!audioBlob.value) return;
+
+  try {
+    showToast({ message: "正在发送录音...", duration: 1000 });
+
+    // 创建 FormData
+    const formData = new FormData();
+    formData.append("audio", audioBlob.value, "recording.webm");
+
+    // TODO: 替换为你的实际上传接口
+    // const response = await fetch('/api/upload-audio', {
+    //   method: 'POST',
+    //   body: formData
+    // });
+
+    // 模拟上传成功
+    console.log("录音文件:", audioBlob.value);
+    console.log("文件大小:", (audioBlob.value.size / 1024).toFixed(2), "KB");
+
+    showToast({ message: "发送成功", type: "success" });
+
+    // 清空录音
+    audioBlob.value = null;
+    recordingDuration.value = 0;
+  } catch (error) {
+    console.error("上传失败:", error);
+    showToast({ message: "发送失败", type: "fail" });
   }
 };
 
@@ -283,16 +311,21 @@ onUnmounted(() => {
   if (currentSprite) {
     currentSprite.destroy();
   }
-  if (recognition) {
-    recognition.stop();
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  }
+  if (recordingTimer) {
+    clearInterval(recordingTimer);
   }
   app.destroy(true);
 });
 
 // 暴露方法供父组件使用
 defineExpose({
-  recognizedText,
-  toggleRecognition,
+  audioBlob,
+  isRecording,
+  startRecording,
+  stopRecording,
 });
 </script>
 
@@ -315,23 +348,64 @@ defineExpose({
     }
   }
 
-  .recognized-text {
+  .recording-status {
     position: absolute;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
-    padding: 12px 20px;
+    padding: 16px 24px;
     background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
     max-width: 80%;
 
-    p {
-      margin: 0;
-      font-size: 14px;
-      color: #333;
-      word-break: break-all;
+    .recording-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .pulse {
+        width: 12px;
+        height: 12px;
+        background-color: #ee0a24;
+        border-radius: 50%;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      span {
+        font-size: 14px;
+        color: #ee0a24;
+        font-weight: 500;
+      }
+    }
+
+    .audio-result {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: #333;
+      }
+
+      .van-button {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.3);
+      opacity: 0.6;
     }
   }
 
