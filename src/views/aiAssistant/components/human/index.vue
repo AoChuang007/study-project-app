@@ -1,7 +1,7 @@
 <!--
  * @Author: Chuang Ao chuang.ao@ly.com
  * @LastEditors: Chuang Ao chuang.ao@ly.com
- * @LastEditTime: 2025-12-08 17:20:19
+ * @LastEditTime: 2025-12-08 17:25:46
  * @FilePath: /study-ai-zy-dev_0602 2/src/views/aiAssistant/components/human/index.vue
 -->
 <template>
@@ -14,33 +14,52 @@
       <van-button @click="playVoice">发声</van-button>
       <van-button @click="switchModel">切换模型</van-button>
       <van-button
-        @touchstart="startRecording"
-        @touchend="stopRecording"
-        @mousedown="startRecording"
-        @mouseup="stopRecording"
-        @mouseleave="handleMouseLeave"
-        :type="isRecording ? 'danger' : 'primary'"
-        :loading="isRecording"
+        v-if="!isRecording && !audioBlob"
+        @click="startRecording"
+        type="primary"
+        icon="volume-o"
       >
-        {{ isRecording ? "录音中..." : "按住说话" }}
+        开始录音
+      </van-button>
+      <van-button
+        v-else-if="isRecording"
+        @click="stopRecording"
+        type="danger"
+        icon="stop-circle-o"
+      >
+        结束录音
       </van-button>
     </div>
 
     <!-- 录音状态和结果显示 -->
-    <div v-show="isRecording || audioBlob" class="recording-status">
-      <div v-if="isRecording" class="recording-indicator">
+    <div v-if="isRecording" class="recording-status recording-active">
+      <div class="recording-indicator">
         <div class="pulse"></div>
-        <span>正在录音...{{ recordingDuration }}s</span>
+        <span>正在录音 {{ recordingDuration }}s</span>
       </div>
-      <div v-else class="audio-result">
-        <p>录音完成,时长: {{ finalDuration }}s</p>
-        <van-button size="small" @click="playRecording">播放录音</van-button>
-        <van-button size="small" type="success" @click="uploadRecording">
-          发送
-        </van-button>
-        <van-button size="small" plain @click="cancelRecording">
-          取消
-        </van-button>
+      <van-button size="small" type="danger" @click="stopRecording">
+        点击结束
+      </van-button>
+    </div>
+    <div v-else-if="audioBlob" class="recording-status">
+      <div class="audio-result">
+        <p>录音完成 • 时长: {{ finalDuration }}s</p>
+        <div class="button-group">
+          <van-button size="small" icon="play-circle-o" @click="playRecording">
+            播放
+          </van-button>
+          <van-button
+            size="small"
+            type="success"
+            icon="success"
+            @click="uploadRecording"
+          >
+            发送
+          </van-button>
+          <van-button size="small" plain icon="close" @click="cancelRecording">
+            取消
+          </van-button>
+        </div>
       </div>
     </div>
   </div>
@@ -249,13 +268,16 @@ const stopRecording = () => {
   }
 
   isRecording.value = false;
+  // 重置实时时长，等待 onstop 事件设置 finalDuration
+  recordingDuration.value = 0;
 };
 
-// 处理鼠标离开按钮
+// 处理鼠标离开按钮（保留以免意外情况）
 const handleMouseLeave = () => {
-  if (isRecording.value) {
-    stopRecording();
-  }
+  // 点击模式下不自动停止
+  // if (isRecording.value) {
+  //   stopRecording();
+  // }
 };
 
 // 取消录音
@@ -374,11 +396,25 @@ defineExpose({
     border-radius: 12px;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
     max-width: 80%;
+    min-width: 280px;
+
+    &.recording-active {
+      background-color: rgba(255, 245, 245, 0.98);
+      border: 1px solid rgba(238, 10, 36, 0.2);
+    }
 
     .recording-indicator {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
+      margin-bottom: 12px;
+
+      > div:first-child {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
 
       .pulse {
         width: 12px;
@@ -389,7 +425,7 @@ defineExpose({
       }
 
       span {
-        font-size: 14px;
+        font-size: 15px;
         color: #ee0a24;
         font-weight: 500;
       }
@@ -398,16 +434,24 @@ defineExpose({
     .audio-result {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
 
       p {
         margin: 0;
-        font-size: 14px;
+        font-size: 15px;
         color: #333;
+        font-weight: 500;
+        text-align: center;
       }
 
-      .van-button {
-        margin-right: 8px;
+      .button-group {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+
+        .van-button {
+          flex: 1;
+        }
       }
     }
   }
