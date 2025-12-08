@@ -1,7 +1,7 @@
 <!--
  * @Author: Chuang Ao chuang.ao@ly.com
  * @LastEditors: Chuang Ao chuang.ao@ly.com
- * @LastEditTime: 2025-12-08 17:09:39
+ * @LastEditTime: 2025-12-08 17:20:19
  * @FilePath: /study-ai-zy-dev_0602 2/src/views/aiAssistant/components/human/index.vue
 -->
 <template>
@@ -27,17 +27,20 @@
     </div>
 
     <!-- 录音状态和结果显示 -->
-    <div v-if="isRecording || audioBlob" class="recording-status">
+    <div v-show="isRecording || audioBlob" class="recording-status">
       <div v-if="isRecording" class="recording-indicator">
         <div class="pulse"></div>
-        <span>正在录音...</span>
+        <span>正在录音...{{ recordingDuration }}s</span>
       </div>
-      <div v-else-if="audioBlob" class="audio-result">
-        <p>录音完成,时长: {{ recordingDuration }}s</p>
+      <div v-else class="audio-result">
+        <p>录音完成,时长: {{ finalDuration }}s</p>
         <van-button size="small" @click="playRecording">播放录音</van-button>
-        <van-button size="small" type="success" @click="uploadRecording"
-          >发送</van-button
-        >
+        <van-button size="small" type="success" @click="uploadRecording">
+          发送
+        </van-button>
+        <van-button size="small" plain @click="cancelRecording">
+          取消
+        </van-button>
       </div>
     </div>
   </div>
@@ -57,7 +60,8 @@ let currentSprite: Live2DSprite | null = null;
 // 录音相关
 const isRecording = ref(false);
 const audioBlob = ref<Blob | null>(null);
-const recordingDuration = ref(0);
+const recordingDuration = ref(0); // 实时录音时长
+const finalDuration = ref(0); // 最终录音时长
 let mediaRecorder: MediaRecorder | null = null;
 let audioChunks: Blob[] = [];
 let recordingStartTime = 0;
@@ -197,7 +201,9 @@ const startRecording = async () => {
     mediaRecorder.onstop = () => {
       const blob = new Blob(audioChunks, { type: "audio/webm" });
       audioBlob.value = blob;
-      recordingDuration.value = Math.round(
+
+      // 保存最终时长
+      finalDuration.value = Math.round(
         (Date.now() - recordingStartTime) / 1000
       );
 
@@ -252,6 +258,14 @@ const handleMouseLeave = () => {
   }
 };
 
+// 取消录音
+const cancelRecording = () => {
+  audioBlob.value = null;
+  recordingDuration.value = 0;
+  finalDuration.value = 0;
+  showToast({ message: "已取消" });
+};
+
 // 播放录音
 const playRecording = () => {
   if (!audioBlob.value) return;
@@ -291,6 +305,7 @@ const uploadRecording = async () => {
     // 清空录音
     audioBlob.value = null;
     recordingDuration.value = 0;
+    finalDuration.value = 0;
   } catch (error) {
     console.error("上传失败:", error);
     showToast({ message: "发送失败", type: "fail" });
