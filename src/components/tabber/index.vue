@@ -119,9 +119,7 @@ const handleNavClick = (index, path) => {
     margin-top: 4px;
     margin-bottom: 1px;
     height: 44px;
-    // width: 94px;
     display: flex;
-    justify-content: center;
     align-items: center;
     align-self: center;
     flex-direction: column;

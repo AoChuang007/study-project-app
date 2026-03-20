@@ -325,7 +325,6 @@ const scrollToBottom = () => {
     border-top: #98e3fc 6px solid;
     display: flex;
     flex-direction: column;
-    padding: 27px 14px 23px 23px;
 
     .chat-messages {
       flex: 1;
@@ -334,7 +333,7 @@ const scrollToBottom = () => {
       padding-bottom: 10px;
       max-height: 300px;
       scroll-behavior: smooth;
-
+      margin:10px;
       .message-item {
         font-family: "Source Han Sans";
 font-size: 14px;
@@ -459,7 +458,7 @@ line-height: 20px;
       height: 90px;
       border-radius: 20px;
       background: #ffffff;
-
+      margin:10px;
       box-sizing: border-box;
       overflow-y: auto;
       overflow-x: hidden;
@@ -521,7 +520,7 @@ line-height: 20px;
         height: 33px;
         border-radius: 50px;
         background: #fff7f7;
-
+        margin-left:10px;
         position: absolute;
         top: 432px;
         .message-input {

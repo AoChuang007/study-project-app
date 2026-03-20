@@ -1133,7 +1133,7 @@ console.log(userInfo.value);
           font-family: "Source Han Sans";
           font-size: 12px;
           color: #444444;
-
+          margin-bottom:0px;
           text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.65);
         }
       }
@@ -1151,7 +1151,7 @@ console.log(userInfo.value);
           font-family: "Source Han Sans";
           font-size: 12px;
           color: #444444;
-
+          margin-bottom:0px;
           text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.65);
         }
         .classCircle {
@@ -1251,8 +1251,6 @@ console.log(userInfo.value);
         opacity: 0;
         transition: opacity 0.3s ease-in-out 0.2s;
         padding: 30px 12px 14px 11px;
-
-
       }
 
       .collapsed{
@@ -1416,6 +1414,7 @@ console.log(userInfo.value);
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                margin:0;
               }
               .specialTime {
                 margin-bottom: 2px;
@@ -1656,5 +1655,6 @@ console.log(userInfo.value);
   font-weight: 500;
   font-size: 8px;
   color: #4b4c4c;
+  margin:0;
 }
 </style>

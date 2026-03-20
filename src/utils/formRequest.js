@@ -9,8 +9,11 @@ import nprogress from "nprogress";
 import "nprogress/nprogress.css";
 
 // 设置基础URL：前端直接请求后端（由环境变量控制）
+// const baseURL =
+//   import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn";
 const baseURL =
-  import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn";
+  import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
+  // import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn";
 
 // 数据转换函数：将对象转换为 form-urlencoded 格式
 const transformData = (data) => {
@@ -39,7 +42,7 @@ const transformData = (data) => {
 // 创建专门用于 form-urlencoded 格式的 axios 实例
 const formService = axios.create({
   baseURL, // URL地址
-  timeout: 30 * 1000, // 优化超时时间为30秒
+  timeout: 60 * 1000, // 增加超时时间为60秒，以便处理较慢的登录请求
   transformRequest: [
     // 自定义数据转换，确保始终转换为 form-urlencoded 格式
     function (data, headers) {

@@ -12,6 +12,19 @@
         align-items: center;
       "
     >
+    <button @click="goBack"
+     :style="{
+          padding: '8px 16px',
+          background: isLoading ? '#95a5a6' : '#3498db',
+          color: 'white',  
+          border: 'none',
+          borderRadius: '4px',
+          cursor: isLoading ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }"
+    >返回</button>
       <button
         @click="executeWorkflow"
         :disabled="isLoading"
@@ -27,6 +40,7 @@
           gap: '8px',
         }"
       >
+      
         <span v-if="isLoading" class="loading-spinner"></span>
         {{ isLoading ? "正在加载..." : "执行工作流" }}
       </button>
@@ -98,6 +112,8 @@ import {
 } from "./nodes/MockDataNode";
 import { QueueNode } from "./nodes/QueueNode";
 // import { MinimapPlugin } from "@baklavajs/plugin-minimap";
+import { useRouter } from "vue-router";
+
 
 export default defineComponent({
   components: {
@@ -114,6 +130,10 @@ export default defineComponent({
     const showResult = ref(false);
     const flowchartData = ref(null);
     const isLoading = ref(false);
+    const route = useRouter();
+const goBack = () => {
+  route.back();
+};
 
     engine.start();
 
@@ -290,6 +310,7 @@ export default defineComponent({
       showResult,
       flowchartData,
       isLoading,
+      goBack,
     };
   },
 });

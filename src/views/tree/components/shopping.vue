@@ -184,7 +184,7 @@ const shopList = [
     width: 345px;
     height: 90px;
     margin: 14px auto;
-    padding: 0 16px 0px 25px;
+   
     background: radial-gradient(
         67% 67% at 57% 50%,
         rgba(255, 255, 255, 0.75) 0%,
@@ -199,6 +199,8 @@ const shopList = [
     justify-content: space-between;
     align-items: center;
     .box {
+      margin-left:25px;
+      margin-right:16px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -313,7 +315,6 @@ const shopList = [
         align-items: flex-start;
 
         width: 162px;
-        height: 212px;
         background: #f9feff;
         border-radius: 0 0 9px 9px;
         position: relative;
@@ -339,13 +340,12 @@ const shopList = [
           color: #3d3d3d;
         }
         .price {
-          margin-top: 5px;
-          margin-left: 7px;
+              margin: 0 0 0 10px;
           font-size: 16px;
           color: #dcb038;
         }
         .already {
-          margin-left: 11px;
+          margin: 0 0 0 10px;
           font-size: 9px;
           font-weight: 300;
           color: #3d3d3d;

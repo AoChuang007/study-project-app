@@ -112,9 +112,20 @@ app
   .use(FloatingBubble)
   .mount("#app");
 
-// 在路由就绪后安全地读取查询参数（例如 isOpenAdaptive）
-router.isReady().then(() => {
-  const query = router.currentRoute.value?.query || {};
+router.isReady().then(async () => {
+  let route = router.currentRoute.value;
+  if (route?.path === "/workflow") {
+    const v = route.query?.isOpenAdaptive;
+    const on = v === true || v === "true";
+    if (!on) {
+      await router.replace({
+        path: route.path,
+        query: { ...(route.query || {}), isOpenAdaptive: "true" },
+      });
+      route = router.currentRoute.value;
+    }
+  }
+  const query = route?.query || {};
   const isOpenAdaptive = query.isOpenAdaptive;
   app.config.globalProperties.$isOpenAdaptive = isOpenAdaptive;
   const adaptiveOn = isOpenAdaptive === true || isOpenAdaptive === "true";

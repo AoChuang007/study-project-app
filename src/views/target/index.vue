@@ -257,11 +257,14 @@ const remainTime = (startDate, endDate) => {
   console.log("总时间" + Math.ceil(diff / (1000 * 60 * 60 * 24)));
 
   const now = new Date();
+  if(now.getTime() - end.getTime() > 0){
+    return 0;
+  }
   const passd = now.getTime() - start.getTime();
 
   return (
     Math.ceil(diff / (1000 * 60 * 60 * 24)) -
-    Math.ceil(passd / (1000 * 60 * 60 * 24))
+    Math.ceil(passd / (1000 * 60 * 60 * 24))+1
   );
   // return diff-passd;
 };
@@ -635,7 +638,7 @@ const handleDateCancel = () => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 13px auto 0 auto;
+      margin: 0px auto 0 auto;
 
       position: relative;
 
@@ -684,7 +687,7 @@ const handleDateCancel = () => {
 
       .people {
         position: absolute;
-        top: -8px;
+        top: 8px;
         right: 75px;
         z-index: 1;
       }
@@ -762,7 +765,7 @@ const handleDateCancel = () => {
       width: 345px;
       // height: 312px;
       // height: 90.434%;
-      margin: 8px auto 0 auto;
+      margin: 0px auto 0 auto;
 
       position: relative;
       z-index: 5;
@@ -829,6 +832,7 @@ const handleDateCancel = () => {
                 flex-direction: column;
                 justify-content: space-between;
                 align-items: flex-start;
+                margin:0px;
 
                 .itemText1 {
                   font-family: "Alibaba PuHuiTi 3.0";
@@ -837,6 +841,7 @@ const handleDateCancel = () => {
                   line-height: 24px;
                   letter-spacing: 0px;
                   color: #505050;
+                  margin:0px;
                 }
 
                 .itemText2 {
@@ -846,6 +851,7 @@ const handleDateCancel = () => {
                   line-height: 16px;
                   letter-spacing: 0px;
                   color: #6b7280;
+                  margin:0px;
                 }
               }
             }
@@ -862,7 +868,6 @@ const handleDateCancel = () => {
           }
 
           .progressBar {
-            margin: 14px auto 0 auto;
             width: 100%;
 
             display: flex;

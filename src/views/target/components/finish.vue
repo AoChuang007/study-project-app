@@ -107,12 +107,14 @@ height: 235px;
       right: 77px;
       font-size: 22px;
       letter-spacing: 0em;
+      margin:0;
     }
     .text-group1,.text-group2 {
             position: absolute;
-    top: 73px;
+    top:48px;
     left:80px;
       font-weight: 700;
+      height:30px;
 
       .text {
         font-size: 14px;

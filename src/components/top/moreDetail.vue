@@ -80,6 +80,7 @@ export default {
     position: absolute;
     left: 16px;
     top: 10px;
+    width: auto;
   }
   .topbg2 {
     position: absolute;
@@ -103,6 +104,9 @@ export default {
     align-items: center;
     justify-content: space-between;
     .name {
+      white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
       font-weight: 700;
       color: #ffffff;
     }

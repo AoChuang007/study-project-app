@@ -80,8 +80,8 @@
         <div class="boll">
           <div class="dayTimeBox">
             <div class="Numtext">
-              <p>
-                <span class="classFinishText"
+              <p class="numP">
+                <span class="classFinishText" 
                   >{{ userInfo.targetUnFinish }}/</span
                 >
                 <span class="classAllText">{{ userInfo.targetAll }}</span>
@@ -502,17 +502,21 @@ const formattedSuggestion = computed(() => {
             font-weight: 700;
             font-size: 11px;
             z-index: 6;
+              margin:0;
           }
           .evaluation {
             font-weight: 700;
             font-size: 6px;
             z-index: 6;
+            margin:0;
           }
           .dida {
             position: absolute;
             top: 0;
             right: 0;
             z-index: 5;
+            width: 32px;
+            height: 39px;
           }
         }
         .time {
@@ -525,6 +529,7 @@ const formattedSuggestion = computed(() => {
           z-index: 5;
           width: 47px;
           text-align: center;
+          margin:0px;
         }
       }
       // 第二个
@@ -596,7 +601,7 @@ const formattedSuggestion = computed(() => {
     }
     .contentOut {
       width: 345px;
-      height: 471px;
+      min-height: 540px;
       border-radius: 4px;
       background: linear-gradient(
         180deg,
@@ -611,6 +616,7 @@ const formattedSuggestion = computed(() => {
         width: 337px;
         height: 467px;
         border-radius: 4px;
+        min-height: 540px;
         background: linear-gradient(180deg, #b8dfff 0%, #fafdff 100%);
 
         box-shadow: 0px 2px 2px 0px #c5ddf0;
@@ -788,6 +794,9 @@ const formattedSuggestion = computed(() => {
             font-family: "GFS Didot";
             font-weight: 400;
             font-size: 22px;
+            .numP{
+              margin:0;
+            }
             .classFinishText {
               color: #0065d7;
             }
@@ -798,6 +807,7 @@ const formattedSuggestion = computed(() => {
         }
         .dayTimeText {
           margin-top: 2px;
+          margin-bottom:0px;
           text-align: center;
           font-family: "Source Han Sans";
           font-size: 12px;

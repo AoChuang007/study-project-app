@@ -944,6 +944,7 @@ onUnmounted(() => {
               font-size: 8px;
               text-shadow: 0px 1px 1px #cbcbcb;
               color: #696969;
+              margin:0px;
             }
             .specialText {
               font-family: "Source Han Sans";

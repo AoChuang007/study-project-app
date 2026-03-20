@@ -233,9 +233,13 @@ const alldays = computed(() => {
 // 获取今日时间 今日时间-开始时间 =已过去的时间
 const passdDays = computed(() => {
   const now = new Date();
+  const end = new Date(endDate.value);
+  if(now >end){
+    return alldays.value;
+  };
   const start = new Date(startDate.value);
   const diff = now.getTime() - start.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return Math.ceil(diff / (1000 * 60 * 60 * 24)) -1;
 });
 // 拆分开始日期为年份和月日
 const startYear = computed(() => {

@@ -152,9 +152,9 @@ height: 192px;
     font-size: 22px;
 font-weight: bold;
     color: #555252;
-    margin-top: 22px;
+    margin-top: 14px;
     // margin-right:84px;
-    margin-bottom:15px;
+    margin-bottom:0px;
     margin-left:20px;
       }
 
@@ -177,7 +177,7 @@ font-size: 20px;
     font-weight: 700;
 font-size: 14px;
 color: #555252;
-margin-top: 20px;
+// margin-top: 20px;
 margin-left:40px;
     // margin: 8px 0;
     opacity: 0.8;

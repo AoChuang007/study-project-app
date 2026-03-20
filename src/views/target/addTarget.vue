@@ -41,7 +41,7 @@
     </div>
     <div class="saveBut" @click="save">
       <div class="min"></div>
-      <p>保存目标</p>
+      <p>点击进行AI规划</p>
     </div>
   </div>
 </template>
@@ -168,6 +168,7 @@ const save = async () => {
     left: 45px;
   }
   .content {
+
     width: 330px;
     height: 271px;
     // border: 1px solid;
@@ -177,7 +178,7 @@ const save = async () => {
     box-shadow: 2px 2px 2px 0px rgba(199, 199, 199, 0.25);
 
     position: absolute;
-    top: 207px;
+    top: 220px;
     left: 25px;
 
     .title {
@@ -202,8 +203,8 @@ const save = async () => {
     }
     .targetContent {
       background: transparent;
-      width: 100%;
-      height: 68.63%;
+      width: 90%;
+      height: 63%;
       border: none;
       padding: 14px 15px 0 16px;
 
@@ -273,6 +274,7 @@ const save = async () => {
       text-align: center;
       letter-spacing: 0.18em;
       color: #ffffff;
+      margin: 0;
     }
   }
 }

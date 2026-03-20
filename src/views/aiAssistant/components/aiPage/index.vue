@@ -1,6 +1,16 @@
 <template>
   <div class="assistant">
-    <van-nav-bar class="nav" left-arrow @click-left="onClickLeft">
+    <van-nav-bar
+      class="nav"
+      left-arrow
+      @click-left="onClickLeft"
+    >
+      <template #right>
+        <div class="voice-entry" @click="goToVoiceAssistant">
+          <van-icon name="phone-o" class="voice-icon" />
+          <span>语音助手</span>
+        </div>
+      </template>
     </van-nav-bar>
     <div class="iconBox">
       <!-- src\assets\aiAssistant\notebook.png -->
@@ -64,6 +74,11 @@ const onClickLeft = () => {
 // 跳转到聊天页面
 const goToChat = () => {
   route.push("/aiAssistant/chat");
+};
+
+// 跳转到语音助手页面
+const goToVoiceAssistant = () => {
+  route.push("/aiAssistantVoice");
 };
 
 // 打字机效果
@@ -157,6 +172,24 @@ onMounted(() => {
   .nav {
     background: transparent;
     --van-nav-bar-icon-color: #000;
+
+    .voice-entry {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: #ABCFFF;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1;
+
+      .voice-icon {
+        margin-right: 4px;
+        font-size: 13px;
+        color: #fff;
+      }
+    }
   }
   .iconBox {
     .notebook {
@@ -240,7 +273,7 @@ onMounted(() => {
     align-items: center;
     position: absolute;
     left: 2px;
-    bottom: 105px;
+    bottom: 80px;
     .box1,
     .box2,
     .box3 {

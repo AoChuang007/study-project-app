@@ -10,10 +10,10 @@ import { getToken } from "@/utils/auth";
 // 创建一个独立的 axios 实例，用于工作流 API
 // 因为该接口返回格式是 { success: true, data: [...] }，与主 request 拦截器不兼容
 const workflowRequest = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn",
+  baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080",
   timeout: 120 * 1000,
 });
-
+// http://47.109.142.124:8080
 // 请求拦截器
 workflowRequest.interceptors.request.use(
   (config) => {

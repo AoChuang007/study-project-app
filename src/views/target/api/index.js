@@ -14,7 +14,14 @@ export const cleanDataByAi = (params) => request.post(`/api/goals/cleanDataByAi`
 // 删除目标
 export const deleteGoal = (id) => request.delete(`/api/goals/deleteGoal?id=${id}`)
 // 获取父目标
-export const getGoalsByUserId = () => request.get(`/api/goals/getGoalsByUserId`)
+export const getGoalsByUserId = (taskId) => {
+  // 兼容：不传参时仍获取全部 goals
+  if (taskId === undefined || taskId === null || taskId === "") {
+    return request.get(`/api/goals/getGoalsByUserId`);
+  }
+  // 后端若按 taskId 过滤，可在这里接收参数
+  return request.get(`/api/goals/getGoalsByUserId?taskId=${taskId}`);
+}
 // 根据目标id获取子目标
 export const getSubGoalsByGoalId = (id) => request.get(`/api/goals/getTasksByGoalId?id=${id}`)
 
@@ -29,3 +36,4 @@ export const updateGoalEndDate = (params) => {
   const token = getToken() || '';
   return postForm('/api/goals/updateGoalEndDate', params, token);
 };
+

@@ -5,11 +5,15 @@ import axios from "axios";
 
 // 创建专门用于流式响应的axios实例，不使用拦截器
 // 生产环境通过 Vercel proxy 代理后端，开发环境直连后端
+// const streamRequest = axios.create({
+//   baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn",
+//   timeout: 120 * 1000,
+// });
 const streamRequest = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn",
+  baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080",
   timeout: 120 * 1000,
 });
-
+// import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
 // 发送消息到AI助手 - 流式响应
 export const sendMessageToAI = async (text, onChunk) => {
   try {
@@ -41,10 +45,10 @@ export const sendMessageToAI = async (text, onChunk) => {
           : JSON.stringify(fullResponse);
       const chunks = responseText.split("");
 
-      // 模拟流式返回效果
+      // 模拟流式返回效果（延迟调小以更快展示）
       for (let i = 0; i < chunks.length; i++) {
         await new Promise((resolve) =>
-          setTimeout(resolve, 30 + Math.random() * 50)
+          setTimeout(resolve, 3 + Math.random() * 7)
         );
 
         if (onChunk) {

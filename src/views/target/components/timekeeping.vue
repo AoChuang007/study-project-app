@@ -7,28 +7,11 @@
         <!-- 环形进度条 -->
         <div class="circular-progress">
           <svg class="progress-ring" width="203" height="203">
-            <circle
-              class="progress-ring-track"
-              cx="101.5"
-              cy="101.5"
-              r="87.5"
-              fill="transparent"
-              stroke="rgba(255, 255, 255, 0.3)"
-              stroke-width="8"
-            />
-            <circle
-              class="progress-ring-bar"
-              cx="101.5"
-              cy="101.5"
-              r="87.5"
-              fill="transparent"
-              stroke="#4A90E2"
-              stroke-width="8"
-              stroke-linecap="round"
-              :stroke-dasharray="circumference"
-              :stroke-dashoffset="strokeDashoffset"
-              transform="rotate(0 101.5 101.5)"
-            />
+            <circle class="progress-ring-track" cx="101.5" cy="101.5" r="87.5" fill="transparent"
+              stroke="rgba(255, 255, 255, 0.3)" stroke-width="8" />
+            <circle class="progress-ring-bar" cx="101.5" cy="101.5" r="87.5" fill="transparent" stroke="#4A90E2"
+              stroke-width="8" stroke-linecap="round" :stroke-dasharray="circumference"
+              :stroke-dashoffset="strokeDashoffset" transform="rotate(0 101.5 101.5)" />
           </svg>
 
           <!-- 跟随进度条移动的圆点图片 -->
@@ -49,11 +32,7 @@
       <!-- 控制按钮 -->
       <div class="control-buttons">
         <!-- 暂停/开始按钮 -->
-        <button
-          class="control-btn pause-btn"
-          @click="toggleTimer"
-          :class="{ active: isRunning }"
-        >
+        <button class="control-btn pause-btn" @click="toggleTimer" :class="{ active: isRunning }">
           <div class="btn-icon">
             <div v-if="isRunning" class="pause-icon">
               <div class="pause-bar"></div>
@@ -78,6 +57,28 @@
     <img src="@/assets/target/star.png" alt="" class="star4" />
     <img src="@/assets/target/star.png" alt="" class="star5" />
 
+    <!-- 根据后端返回的 clouds 渲染云朵卡片 -->
+    <div
+      v-for="cloud in clouds"
+      :key="cloud.id"
+      class="cloud-wrapper"
+      :style="cloud.style"
+      @click="openCloudDialog(cloud)"
+    >
+      <img src="@/assets/target/cloud.png" alt="" class="cloud-img" />
+      <div class="cloud-text">
+        {{ cloud.cardName }}
+      </div>
+    </div>
+
+    <!-- 云朵详情弹窗 -->
+    <cloud-dialog
+      v-if="showCloudDialog && activeCloud"
+      :cloud="activeCloud"
+      :clouds="clouds"
+      @close="showCloudDialog = false"
+    />
+
     <!-- 完成弹窗 -->
     <finish
       v-if="showFinishDialog"
@@ -92,14 +93,21 @@
 <script setup>
 import topNav from "@/components/top/nomal.vue";
 import finish from "./finish.vue";
+import cloudDialog from "./cloudDialog.vue";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
-import { showToast } from 'vant';
-import {recordPunchEvent} from "../api/index";
+import { showToast } from "vant";
+// import request from "@/utils/request";
+import { recordPunchEvent, getSubGoalsByGoalId } from "../api/index";
 
 // src\store\user.js
 // import {getUserInfo} from "../store/user";
 
+// 后端返回的云朵卡片列表
+const clouds = ref([]);
+// 弹窗状态与当前选中的云朵
+const showCloudDialog = ref(false);
+const activeCloud = ref(null);
 const route = useRoute();
 // console.log(getUserInfo())
 // const id  = getUserInfo().id;
@@ -147,33 +155,6 @@ const formattedTime = computed(() => {
     .padStart(2, "0")}`;
 });
 
-// 计算进度圆点的位置
-// const progressDotStyle = computed(() => {
-//   const secondsInHour = 3600; // 一小时的秒数
-//   const currentHourSeconds = totalSeconds.value % secondsInHour; // 当前小时内的秒数
-//   const progress = currentHourSeconds / secondsInHour; // 当前小时的进度
-
-//   // 计算角度（从右侧开始，顺时针）
-//   const angle = progress * 360; // 角度
-//   const radian = angle * (Math.PI / 180); // 转换为弧度，从右侧开始
-
-//   // 计算圆点位置（相对于SVG中心101.5,101.5，半径87.5）
-//   const centerX = 101.5;
-//   const centerY = 101.5;
-//   const dotRadius = 87.5;
-
-//   const x = centerX + dotRadius * Math.cos(radian);
-//       const y = centerY + dotRadius * Math.sin(radian);
-
-//   return {
-//     position: 'absolute',
-//     left: `${x - 8}px`, // 减去图片宽度的一半进行居中
-//     top: `${y - 8}px`, // 减去图片高度的一半进行居中
-//     transform: 'translate(-50%, -50%)',
-//     transition: 'all 0.3s ease'
-//   };
-// });
-
 // 开始/暂停计时器
 const toggleTimer = () => {
   if (isRunning.value) {
@@ -188,7 +169,7 @@ const toggleTimer = () => {
       startTime.value = now;
       timingDate.value = now.toISOString().split('T')[0]; // YYYY-MM-DD格式
     }
-    
+
     isRunning.value = true;
     timerInterval = setInterval(() => {
       totalSeconds.value++;
@@ -202,13 +183,106 @@ onMounted(() => {
   const now = new Date();
   startTime.value = now;
   timingDate.value = now.toISOString().split('T')[0]; // YYYY-MM-DD格式
-  
+
   // 自动开始计时
   isRunning.value = true;
   timerInterval = setInterval(() => {
     totalSeconds.value++;
   }, 1000);
+
+  // 加载云朵卡片数据并生成随机布局
+  fetchClouds();
 });
+
+// 生成云朵随机布局（大小和位置），并尽量避开中间计时器区域
+const generateCloudLayout = () => {
+  if (!clouds.value.length || typeof window === "undefined") return;
+
+  const width = window.innerWidth || 375; // 兜底宽度
+  const height = window.innerHeight || 667; // 兜底高度
+
+  // 计时器圆心的大致位置（相对于整个页面）
+  const centerX = width / 2;
+  const centerY = 172 + 203 / 2; // margin-top + 圆的直径一半
+  const forbiddenRadius = 140; // 不允许云朵进入的半径
+
+  const baseCloudWidth = 127; // 云朵图片大致宽度
+  const baseCloudHeight = 45; // 云朵图片大致高度
+
+  const len = clouds.value.length;
+
+  clouds.value = clouds.value.map((item, idx) => {
+    const scale = 0.8 + Math.random() * 0.5; // 0.8 - 1.3 之间
+
+    let top = 0;
+    let left = 0;
+    let distance = 0;
+    let tries = 0;
+
+    do {
+      // 将高度按数量均分，尽量让云朵上下分布均匀
+      const usableHeight = height - 160; // 上下各预留一点安全距离
+      const segmentHeight = usableHeight / len;
+      const segmentTop = segmentHeight * idx + 80;
+      const segmentBottom = segmentTop + segmentHeight;
+
+      const maxTopOffset = Math.max(segmentBottom - segmentTop - baseCloudHeight, 20);
+      top = segmentTop + Math.random() * maxTopOffset;
+
+      const maxLeft = Math.max(width - baseCloudWidth, 80);
+      left = Math.random() * maxLeft;
+
+      const cloudCenterX = left + (baseCloudWidth * scale) / 2;
+      const cloudCenterY = top + (baseCloudHeight * scale) / 2;
+
+      const dx = cloudCenterX - centerX;
+      const dy = cloudCenterY - centerY;
+      distance = Math.sqrt(dx * dx + dy * dy);
+
+      tries++;
+      if (tries > 30) break; // 防止极端情况下死循环
+    } while (distance < forbiddenRadius);
+
+    return {
+      ...item,
+      style: {
+        position: "absolute",
+        top: `${top}px`,
+        left: `${left}px`,
+        transform: `scale(${scale})`,
+        transition: "all 0.3s ease-out",
+        zIndex: 1,
+      },
+    };
+  });
+};
+
+// 在当前组件中请求云朵数据
+const fetchClouds = async () => {
+  try {
+    const taskIdNum = Number(task_id.value);
+
+  
+    const res = await getSubGoalsByGoalId(goal_id.value);
+    const data = res && res.data;
+
+    const tasks = Array.isArray(data) ? data : [];
+    const currentTask = tasks.find((t) => Number(t?.id) === taskIdNum);
+    const cards =
+      (currentTask && Array.isArray(currentTask.knowledgeCards) && currentTask.knowledgeCards) || [];
+
+    clouds.value = cards;
+    generateCloudLayout();
+  } catch (error) {
+    console.error("获取云朵数据失败：", error);
+  }
+};
+
+// 打开云朵详情弹窗
+const openCloudDialog = (cloud) => {
+  activeCloud.value = cloud;
+  showCloudDialog.value = true;
+};
 
 // 停止计时器
 const stopTimer = async () => {
@@ -218,7 +292,7 @@ const stopTimer = async () => {
   // 记录结束时间
   endTime.value = new Date();
 
-  
+
   // 获取计时时间数据
   const timingData = {
     id: Number(goal_id.value),
@@ -275,6 +349,7 @@ onUnmounted(() => {
   min-height: 100vh;
   background: linear-gradient(327deg, #abcfff 7%, #def8ff 48%);
   position: relative;
+
   .timer {
     display: flex;
     flex-direction: column;
@@ -401,6 +476,7 @@ onUnmounted(() => {
     left: 33px;
     opacity: 0.7;
   }
+
   .star2 {
     width: 46px;
     height: 53px;
@@ -409,6 +485,7 @@ onUnmounted(() => {
     left: 29px;
     opacity: 0.7;
   }
+
   .star3 {
     width: 32px;
     height: 37px;
@@ -417,6 +494,7 @@ onUnmounted(() => {
     right: 26px;
     opacity: 0.7;
   }
+
   .star4 {
     width: 32px;
     height: 37px;
@@ -425,6 +503,7 @@ onUnmounted(() => {
     right: -2px;
     opacity: 0.7;
   }
+
   .star5 {
     width: 58px;
     height: 67px;
@@ -432,6 +511,31 @@ onUnmounted(() => {
     bottom: -11px;
     right: 13px;
     opacity: 0.7;
+  }
+
+  .cloud-wrapper {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  .cloud-img {
+    display: block;
+  }
+
+  .cloud-text {
+    font-family: Alibaba PuHuiTi 2.0;
+font-size: 12px;
+font-weight: normal;
+line-height: normal;
+    position: absolute;
+    padding: 0 8px;
+    text-align: center;
+    color: #599DA7;
+    word-break: break-all;
   }
 }
 </style>

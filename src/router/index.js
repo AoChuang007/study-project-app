@@ -133,13 +133,19 @@ let routes = [
     path: "/aiAssistant",
     name: "aiAssistant",
     meta: { title: "AI助手" },
-    component: () => import("@/views/aiAssistant/index.vue"),
+    component: () => import("@/views/aiAssistant/components/aiPage/index.vue"),
   },
   {
     path: "/aiAssistant/chat",
     name: "aiAssistantChat",
     meta: { title: "AI对话" },
     component: () => import("@/views/aiAssistant/chat.vue"),
+  },
+    {
+    path: "/aiAssistantVoice",
+    name: "aiAssistantVoice",
+    meta: { title: "AI语音助手" },
+    component: () => import("@/views/aiAssistant/components/human/index.vue"),
   },
 ];
 // 路由

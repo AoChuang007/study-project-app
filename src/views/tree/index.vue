@@ -393,6 +393,7 @@ onMounted(() => {
         font-weight: 800;
         line-height: 20px;
         color: #ffffff;
+        margin:0;
       }
       .p2 {
         font-family: "Alibaba PuHuiTi 2.0";
@@ -402,6 +403,7 @@ onMounted(() => {
         letter-spacing: 0px;
         color: #f4f4f4;
         width: 74px;
+        margin:0;
       }
     }
   }
@@ -580,6 +582,7 @@ onMounted(() => {
         font-size: 10px;
         color: #535353;
         text-align: center;
+        margin:0;
       }
     }
   }

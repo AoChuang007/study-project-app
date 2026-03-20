@@ -17,7 +17,7 @@
           <p class="text3">小时</p>
         </div>
         <div class="logo">
-          <img src="@/assets/login/logo.png" alt="">
+          <img src="@/assets/login/logo.png" alt="" class="imgLogo">
         </div>
       </template>
     </van-nav-bar>
@@ -137,6 +137,10 @@ export default {
     top: 10px;
     width: 57.57px;
     height: 24px;
+    .imgLogo{
+          width: 57.57px;
+    height: 24px;
+    }
   }
 }
 </style>

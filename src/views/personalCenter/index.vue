@@ -40,7 +40,7 @@
             <span class="cell-title">{{ item.title }}</span>
           </template>
           <template #right-icon>
-            <van-icon name="arrow" class="custom-arrow" v-if="index <= 2" />
+            <van-icon name="arrow" class="custom-arrow" v-if="index <= 2 || index == 5" />
             <van-switch
               v-model="checked"
               class="switch"
@@ -48,11 +48,11 @@
               active-color="#097DF4"
               size="22"
             />
-            <img
+            <!-- <img
               v-if="index == 5"
               src="@/assets/personal/icon7.png"
               class="icon7"
-            />
+            /> -->
             <div class="chose" v-if="index == 3">
               <div
                 class="selection"
@@ -169,6 +169,9 @@ const handleCellClick = (index) => {
   } else if (index === 2) {
     // 点击"AI助手设置"
     // 可以在这里添加其他跳转逻辑
+  } else if(index ===5){
+    // 点击"学习工作流"
+    router.push("/workflow?isOpenAdaptive=true");
   }
 };
 
@@ -210,7 +213,7 @@ const card2List = ref([
     img: icon5,
   },
   {
-    title: "历史数据导出",
+    title: "学习工作流",
     img: icon6,
   },
 ]);
@@ -268,8 +271,9 @@ const options = ref([
     }
 
     .level {
+      margin:0;
       position: absolute;
-      top: -20px;
+      top: -31px;
       left: 101px;
       font-family: YouSheBiaoTiHei;
       font-size: 14px;
@@ -371,6 +375,7 @@ const options = ref([
       position: absolute;
       top: 93px;
       right: 30px;
+      margin:0;
     }
     .card1Second {
       width: 339px;
@@ -390,7 +395,7 @@ const options = ref([
         opacity: 0.8;
         background: #f5f5f5;
         box-shadow: 0px 4px 6px 0px #b7d7eb;
-
+          display: flex;
         img {
           margin: 10px auto;
         }
