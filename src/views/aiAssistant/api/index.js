@@ -10,7 +10,7 @@ import axios from "axios";
 //   timeout: 120 * 1000,
 // });
 const streamRequest = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080",
+  baseURL: import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.top",
   timeout: 120 * 1000,
 });
 // import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
@@ -48,7 +48,7 @@ export const sendMessageToAI = async (text, onChunk) => {
       // 模拟流式返回效果（延迟调小以更快展示）
       for (let i = 0; i < chunks.length; i++) {
         await new Promise((resolve) =>
-          setTimeout(resolve, 3 + Math.random() * 7)
+          setTimeout(resolve, 3 + Math.random() * 7),
         );
 
         if (onChunk) {

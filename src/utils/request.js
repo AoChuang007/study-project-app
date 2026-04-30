@@ -19,8 +19,8 @@ import "nprogress/nprogress.css";
 // 在本地开发时，请在 `.env` 或运行时指定 `VITE_BACKEND_BASE_URL`，默认回退到后端 IP 地址。
 // http://47.109.142.124:8080
 const baseURL =
-import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
-  // import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn";
+  // import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
+  import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.top";
 
 // 创建axios实例
 const service = axios.create({
@@ -80,7 +80,7 @@ service.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 // 添加响应拦截器
 service.interceptors.response.use(
@@ -106,6 +106,6 @@ service.interceptors.response.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 export default service;

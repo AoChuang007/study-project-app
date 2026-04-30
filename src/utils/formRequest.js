@@ -9,11 +9,13 @@ import nprogress from "nprogress";
 import "nprogress/nprogress.css";
 
 // 设置基础URL：前端直接请求后端（由环境变量控制）
+// TODO: 已废弃域名
 // const baseURL =
 //   import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn";
+
 const baseURL =
-  import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
-  // import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.cn";
+  // import.meta.env.VITE_BACKEND_BASE_URL || "http://47.109.142.124:8080";
+  import.meta.env.VITE_BACKEND_BASE_URL || "https://study.tagtax.top";
 
 // 数据转换函数：将对象转换为 form-urlencoded 格式
 const transformData = (data) => {
@@ -109,7 +111,7 @@ formService.interceptors.request.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // 添加响应拦截器
@@ -136,7 +138,7 @@ formService.interceptors.response.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 export const postForm = (url, data, token = "") => {
   const params = new URLSearchParams();
